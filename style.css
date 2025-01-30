@@ -5,25 +5,12 @@ body {
     margin: 10px;
 }
 
-h1 {
-    font-family: Arial, Helvetica, sans-serif;
-    color: white;
-}
-
-p{
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    color: white;
-    text-align: center;
-}
-
 .rectangle {
-    width: 200px;
-    height: 100px;
+    width: 1220px;
+    height: 800px;
     margin: 20px;
-    border-radius: 10px;
-    justify-content: center;
-    align-items: center;
-    color: white
+    background-color: rgba(28, 28, 28, 1.00);
+    border-radius: 60px;
 }
 
 .one {
