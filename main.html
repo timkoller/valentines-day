@@ -20,7 +20,7 @@
       display: grid;
       grid-column-gap: 0.5em;
       grid-template-columns: repeat(7, 1fr);
-      height: 0.2em;
+      height: 0.1em;
       padding: 0 0.5em;
       position: fixed;
       top: 0.5em;
@@ -99,25 +99,20 @@
     const app = new Vue({
       el: "#app",
       data() {
-        const startDate = new Date("2025-01-01T00:00:00Z"); // Hardcoded start date (change as needed)
+        const startDate = new Date("2024-08-28T21:30:00Z"); // Hardcoded start date (change as needed)
         const now = new Date();
         
-        const monthsPassed = this.getMonthsDifference(startDate, now);
-        const weeksPassed = this.getWeeksDifference(startDate, now);
-        const daysPassed = this.getDaysDifference(startDate, now);
-        const hoursPassed = this.getHoursDifference(startDate, now);
-        const minutesPassed = this.getMinutesDifference(startDate, now);
-        const secondsPassed = this.getSecondsDifference(startDate, now);
-
         return {
+          startDate: startDate,
+          current: 0,
           times: [
-            { value: monthsPassed, message: `${monthsPassed} Months have passed since the start of the year` },
-            { value: weeksPassed, message: `${weeksPassed} Weeks have gone by since January 1st` },
-            { value: daysPassed, message: `${daysPassed} Days have passed since that moment` },
-            { value: hoursPassed, message: `${hoursPassed} Hours have elapsed since the clock started ticking` },
-            { value: minutesPassed, message: `${minutesPassed} Minutes have passed, and counting` },
-            { value: secondsPassed, message: `${secondsPassed} Seconds have slipped away since then` },
-            { value: "", message: "" },
+            { value: this.getMonthsDifference(startDate, now), message: `${this.getMonthsDifference(startDate, now)} Months have passed since the start of the year` },
+            { value: this.getWeeksDifference(startDate, now), message: `${this.getWeeksDifference(startDate, now)} Weeks have gone by since January 1st` },
+            { value: this.getDaysDifference(startDate, now), message: `${this.getDaysDifference(startDate, now)} Days have passed since that moment` },
+            { value: this.getHoursDifference(startDate, now), message: `${this.getHoursDifference(startDate, now)} Hours have elapsed since the clock started ticking` },
+            { value: this.getMinutesDifference(startDate, now), message: `${this.getMinutesDifference(startDate, now)} Minutes have passed, and counting` },
+            { value: this.getSecondsDifference(startDate, now), message: `${this.getSecondsDifference(startDate, now)} Seconds have slipped away since then` },
+            { value: "Enjoy the moment", message: "This page is a reminder to live in the now!" }, // 7th page
           ],
           images: [
             "https://example.com/image1.jpg", // Replace with actual image URL
@@ -127,15 +122,22 @@
             "https://example.com/image5.jpg",
             "https://example.com/image6.jpg",
             "https://example.com/image7.jpg", // 7th page image
-          ],
-          current: 0
+          ]
         };
       },
       methods: {
         getMonthsDifference(start, end) {
           const years = end.getFullYear() - start.getFullYear();
           const months = end.getMonth() - start.getMonth();
-          return years * 12 + months;
+        
+          let totalMonths = years * 12 + months;
+        
+          // Check if the current day of the end date is before the start day in the month
+          if (end.getDate() < start.getDate()) {
+            totalMonths--; // Subtract one month if the day hasn't passed yet
+          }
+        
+          return totalMonths;
         },
         getWeeksDifference(start, end) {
           const diffInTime = end - start;
@@ -156,9 +158,31 @@
         getSecondsDifference(start, end) {
           const diffInTime = end - start;
           return Math.floor(diffInTime / 1000); // Seconds
+        },
+        updateTime() {
+          const now = new Date();
+          this.times[0].value = this.getMonthsDifference(this.startDate, now);
+          this.times[0].message = `${this.times[0].value} Months have passed since the start of the year`;
+
+          this.times[1].value = this.getWeeksDifference(this.startDate, now);
+          this.times[1].message = `${this.times[1].value} Weeks have gone by since January 1st`;
+
+          this.times[2].value = this.getDaysDifference(this.startDate, now);
+          this.times[2].message = `${this.times[2].value} Days have passed since that moment`;
+
+          this.times[3].value = this.getHoursDifference(this.startDate, now);
+          this.times[3].message = `${this.times[3].value} Hours have elapsed since the clock started ticking`;
+
+          this.times[4].value = this.getMinutesDifference(this.startDate, now);
+          this.times[4].message = `${this.times[4].value} Minutes have passed, and counting`;
+
+          this.times[5].value = this.getSecondsDifference(this.startDate, now);
+          this.times[5].message = `${this.times[5].value} Seconds have slipped away since then`;
         }
       },
       mounted() {
+        setInterval(this.updateTime, 1000); // Update every second
+
         let timeline = anime.timeline({
           autoplay: true,
           duration: 5000,
