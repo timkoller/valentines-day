@@ -162,10 +162,10 @@
         updateTime() {
           const now = new Date();
           this.times[0].value = this.getMonthsDifference(this.startDate, now);
-          this.times[0].message = `${this.times[0].value} Months have passed since the start of the year`;
+          this.times[0].message = `${this.times[0].value} Months have passed since the start`;
 
           this.times[1].value = this.getWeeksDifference(this.startDate, now);
-          this.times[1].message = `${this.times[1].value} Weeks have gone by since January 1st`;
+          this.times[1].message = `${this.times[1].value} Weeks have gone by since the 28th of August`;
 
           this.times[2].value = this.getDaysDifference(this.startDate, now);
           this.times[2].message = `${this.times[2].value} Days have passed since that moment`;
