@@ -1,219 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Happy Valentines Day!!</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue & Anime.js Color Animation</title>
+  <style>
+    html, body, main, section {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      box-sizing: border-box;
+      display: grid;
+      grid-column-gap: 1em;
+      grid-template-columns: repeat(3, 1fr);
+      height: 0.5em;
+      padding: 0 1em;
+      position: fixed;
+      top: 1em;
+      width: 100%;
+    }
+
+    nav > div {
+      background: rgba(0,0,0,0.25);
+      height: 100%;
+    }
+
+    nav > div > div {
+      background: black;
+      height: 100%;
+      width: 0%;
+    }
+
+    section {
+      height: 100%;
+      width: 100%;
+      transition: background 1s;
+    }
+  </style>
 </head>
 <body>
-  <!-- frame: Board -->
-  <div class="frame board-a95bdb9d5959">
-  <!-- rect: window -->
-    <div class="shape rect window-a95c57a67b07">
-    </div>
-    <!-- text: Hello, Linda! -->
-    <div class="shape text hello-lin-a95ccc31ccc7">
-      <div class="text-node-html" id="html-text-node-d26931c1-4f24-80c0-8005-a95ccc31ccc7" data-x="778" data-y="719">
-        <div class="root rich-text root-0" style="display:flex;white-space:break-spaces;align-items:flex-start" xmlns="http://www.w3.org/1999/xhtml">
-          <div class="paragraph-set root-0-paragraph-set-0">
-            <p class="paragraph root-0-paragraph-set-0-paragraph-0" dir="ltr"><span class="text-node root-0-paragraph-set-0-paragraph-0-text-0" style="color:rgba(255, 255, 255, 1);text-transform:none;line-break:auto;overflow-wrap:initial;white-space:pre;font-size:24px;text-rendering:geometricPrecision;caret-color:rgba(255, 255, 255, 1);text-decoration:none;--font-id:arial;--fills:[[&quot;^ &quot;,&quot;~:fill-color&quot;,&quot;#ffffff&quot;,&quot;~:fill-opacity&quot;,1]];letter-spacing:0px;font-family:&quot;arial&quot;;font-style:normal;font-weight:400">Hello, Linda!</span></p>
-          </div>
-        </div>
+  <main id="app">
+    <nav>
+      <div v-for="(color, index) in colors" :key="index">
+        <div></div>
       </div>
-    </div>
-    <!-- rect: line -->
-    <div class="shape rect line-a95d222f8700">
-    </div>
-    <!-- text: Do you want to be my valentine? -->
-    <div class="shape text do-you-wan-a95e6399b7ea">
-      <div class="text-node-html" id="html-text-node-d26931c1-4f24-80c0-8005-a95e6399b7ea" data-x="722" data-y="792">
-        <div class="root rich-text root-0" style="display:flex;white-space:break-spaces;align-items:flex-start" xmlns="http://www.w3.org/1999/xhtml">
-          <div class="paragraph-set root-0-paragraph-set-0">
-            <p class="paragraph root-0-paragraph-set-0-paragraph-0" dir="ltr"><span class="text-node root-0-paragraph-set-0-paragraph-0-text-0" style="color:rgba(255, 255, 255, 1);text-transform:none;line-break:auto;overflow-wrap:initial;white-space:break-spaces;font-size:24px;text-rendering:geometricPrecision;caret-color:rgba(255, 255, 255, 1);text-decoration:none;--font-id:arial;--fills:[[&quot;^ &quot;,&quot;~:fill-color&quot;,&quot;#ffffff&quot;,&quot;~:fill-opacity&quot;,1]];letter-spacing:0px;font-family:&quot;arial&quot;;font-style:normal;font-weight:400">Do you want to be my valentine?</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- group: rose -->
-    <div class="shape group rose-a95ea290c60c">
-      <svg width="70.735" xmlns="http://www.w3.org/2000/svg" height="70.735" id="screenshot-d26931c1-4f24-80c0-8005-a95ea290c60c" viewBox="651 762 70.735 70.735" style="-webkit-print-color-adjust::exact" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" version="1.1">
-        <g id="shape-d26931c1-4f24-80c0-8005-a95ea290c60c" style="fill:#000000" width="800" height="800" class="iconify iconify--noto" rx="0" ry="0">
-          <defs></defs>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea2914fe4" style="display:none">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea2914fe4">
-              <rect rx="0" ry="0" x="658.8677352319642" y="769.8677352319642" transform="matrix(0.937137, 0.348963, -0.348963, 0.937137, 321.399247, -189.391595)" width="55.00000000000023" height="54.99999999999977" fill="none" style="fill:none"></rect>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea291cf1d">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea291cf1d">
-              <path d="M680.280,804.863L689.057,808.209C689.057,808.209,687.509,810.223,686.597,810.901C685.111,811.998,684.363,812.564,683.408,813.900C681.932,815.955,681.329,817.734,681.329,817.734C681.329,817.734,681.879,817.746,682.408,818.136C683.052,818.609,683.264,819.234,683.091,819.504C682.933,819.743,682.197,819.268,681.435,819.616C680.832,819.892,680.374,820.606,680.118,821.084C679.861,821.566,679.554,822.181,678.562,821.963C677.565,821.747,676.114,821.321,675.985,820.732C675.858,820.149,679.088,811.980,679.088,811.980L680.280,804.863ZZ" style="fill:#307d31"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea292194e">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea292194e">
-              <path d="M680.859,803.001C680.577,803.240,676.324,802.472,676.324,802.472C676.324,802.472,674.726,802.689,673.355,804.829C672.612,805.987,671.722,808.563,671.152,809.368C670.337,810.523,668.642,810.740,668.598,811.067C668.554,811.395,669.797,811.835,670.908,811.772C673.418,811.629,674.526,809.813,675.853,808.391C677.132,807.024,678.729,806.651,678.729,806.651C678.729,806.651,677.989,807.714,677.635,809.059C677.329,810.215,677.150,811.767,676.177,812.977C675.247,814.130,674.336,814.694,674.536,814.906C674.689,815.064,676.970,815.661,678.564,814.063C680.326,812.299,681.044,810.580,682.089,809.548C683.243,808.405,684.682,808.272,684.682,808.272C684.682,808.272,685.359,809.102,685.867,810.978C686.432,813.068,686.901,814.825,687.219,815.915C687.962,818.475,689.793,819.877,689.983,819.562C690.285,819.060,689.512,817.787,689.683,816.649C690.107,813.850,691.315,812.883,691.441,810.660C691.627,807.451,689.557,806.621,688.883,806.214C688.723,806.127,680.859,803.001,680.859,803.001ZZ" style="fill:#5c9823"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea292194f">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea292194f">
-              <path d="M682.595,786.949C682.291,786.372,677.380,778.950,677.380,778.950L678.392,775.924C678.392,775.924,677.903,772.189,680.669,770.573C683.071,769.170,685.061,770.562,685.061,770.562C685.061,770.562,686.681,769.584,688.642,770.204C691.149,770.996,691.578,773.512,691.578,773.512L701.993,779.467L706.714,785.838C706.714,785.838,707.747,785.883,708.311,786.708C708.900,787.564,708.200,788.643,707.915,789.137C707.643,789.609,696.967,793.112,696.967,793.112L693.036,806.302L688.966,808.441C688.966,808.441,688.417,808.686,687.552,808.483C687.050,808.365,686.506,807.942,686.506,807.942L686.631,802.129L682.595,786.949ZZ" style="fill:#96010c"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea2925229">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea2925229">
-              <path d="M702.647,777.230L701.107,776.785L699.728,777.276L699.471,779.110C699.471,779.110,699.047,780.397,697.822,780.633C696.597,780.869,694.264,781.138,694.264,781.138L692.077,782.873C692.077,782.873,691.314,782.263,690.168,781.006C689.098,779.828,687.984,777.635,687.984,777.635L685.029,776.300C685.029,776.300,684.468,776.032,683.789,776.366C682.810,776.854,682.468,778.534,683.300,780.499C684.101,782.388,686.325,785.156,686.786,785.864C687.247,786.572,687.993,787.537,688.429,788.053C688.849,788.548,689.327,789.212,689.624,789.263C689.923,789.310,690.686,788.517,692.327,788.087C693.968,787.658,695.528,787.358,697.875,787.411C700.221,787.464,702.523,787.377,703.275,787.217C704.027,787.057,704.176,784.118,704.026,782.233C703.875,780.347,702.761,777.085,702.647,777.230ZZ" style="fill:#af0c1b"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea292522a">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea292522a">
-              <path d="M692.799,781.413C692.036,781.899,691.839,782.724,691.839,782.724C691.839,782.724,692.705,783.808,693.662,784.600C695.398,786.035,699.955,787.512,702.475,787.345C704.995,787.179,706.362,786.734,707.070,785.842C707.900,784.794,709.119,782.506,707.491,779.786C705.626,776.666,701.182,776.336,700.975,776.892C700.768,777.448,702.540,777.603,701.789,779.621C701.038,781.638,698.812,782.198,696.919,781.778C695.026,781.357,693.955,780.674,692.799,781.413ZZ" style="fill:#db132c"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea2928f39">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea2928f39">
-              <path d="M684.256,776.246C684.256,776.246,684.353,775.356,685.273,774.956C686.667,774.338,688.167,774.301,689.212,773.773C690.256,773.245,691.884,772.113,694.613,772.726C698.659,773.632,700.611,776.000,700.507,777.979C700.403,779.957,699.121,780.172,698.031,779.799C696.942,779.425,696.531,778.694,694.426,778.300C690.860,777.633,689.026,778.999,688.661,779.056C688.294,779.107,687.515,778.157,686.293,777.289C685.412,776.663,684.679,776.464,684.256,776.246ZZ" style="fill:#f71538"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea2928f3a">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea2928f3a">
-              <path d="M690.973,791.921C690.973,791.921,692.505,789.900,695.276,789.291C698.052,788.683,699.696,789.254,703.025,789.022C706.353,788.789,707.652,788.305,708.218,788.177C708.799,788.045,709.325,787.924,709.452,788.581C709.532,789.006,708.642,790.288,707.167,791.307C705.661,792.346,704.407,792.760,702.773,794.907C700.613,797.739,701.396,801.336,697.497,805.726C696.235,807.145,694.159,808.101,692.387,808.564C690.614,809.027,688.506,808.494,688.506,808.494C688.506,808.494,689.414,808.259,690.499,806.554C691.031,805.716,691.922,804.209,692.341,802.407C693.540,797.255,690.973,791.921,690.973,791.921ZZ" style="fill:#cd0e1f"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ea2928f3b">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ea2928f3b">
-              <path d="M675.974,785.556C675.621,786.653,673.652,790.390,673.134,793.788C672.726,796.460,673.646,801.796,677.946,804.864C681.901,807.690,687.064,808.218,687.064,808.218C687.064,808.218,689.957,805.880,690.687,801.172C691.484,796.040,688.040,790.723,683.558,785.964C678.173,780.244,678.440,775.869,678.440,775.869C678.440,775.869,676.481,774.493,675.210,776.243C673.261,778.929,676.509,783.898,675.974,785.556ZZ" style="fill:#e2122d"></path>
-            </g>
-          </g>
-        </g>
-      </svg>
-    </div>
-    <!-- group: rose -->
-    <div class="shape group rose-a95ed9d564a7">
-      <svg width="68.358" xmlns="http://www.w3.org/2000/svg" height="68.358" id="screenshot-d26931c1-4f24-80c0-8005-a95ed9d564a7" viewBox="955 809 68.358 68.358" style="-webkit-print-color-adjust::exact" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" version="1.1">
-        <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564a7" style="fill:#000000" width="800" height="800" class="iconify iconify--noto" rx="0" ry="0">
-          <defs></defs>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564a8" style="display:none">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564a8">
-              <rect rx="0" ry="0" x="961.6789339645102" y="815.6789339645102" transform="matrix(0.958805, -0.284065, 0.284065, 0.958805, -198.768658, 315.726379)" width="55.000000000000455" height="54.99999999999977" fill="none" style="fill:none"></rect>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564a9">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564a9">
-              <path d="M988.815,852.828L997.842,850.230C997.842,850.230,997.815,852.770,997.493,853.860C996.964,855.630,996.706,856.531,996.745,858.173C996.800,860.702,997.387,862.487,997.387,862.487C997.387,862.487,997.834,862.166,998.491,862.160C999.290,862.151,999.835,862.523,999.858,862.844C999.876,863.130,999.002,863.191,998.602,863.928C998.286,864.510,998.349,865.357,998.431,865.893C998.515,866.432,998.639,867.108,997.715,867.530C996.789,867.957,995.373,868.488,994.916,868.095C994.464,867.704,992.138,859.233,992.138,859.233L988.815,852.828ZZ" style="fill:#307d31"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564aa">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564aa">
-              <path d="M988.159,850.992C988.078,851.352,984.217,853.294,984.217,853.294C984.217,853.294,983.069,854.427,983.259,856.961C983.361,858.334,984.197,860.927,984.225,861.914C984.267,863.326,983.043,864.518,983.204,864.807C983.366,865.095,984.624,864.699,985.474,863.982C987.395,862.359,987.189,860.242,987.396,858.308C987.598,856.447,988.650,855.189,988.650,855.189C988.650,855.189,988.698,856.484,989.222,857.771C989.672,858.879,990.461,860.228,990.410,861.780C990.360,863.260,989.970,864.258,990.258,864.308C990.474,864.342,992.657,863.449,992.971,861.214C993.320,858.744,992.861,856.940,993.076,855.487C993.313,853.879,994.383,852.908,994.383,852.908C994.383,852.908,995.422,853.165,996.955,854.360C998.663,855.691,1000.093,856.814,1001.003,857.494C1003.135,859.094,1005.440,859.115,1005.404,858.749C1005.343,858.167,1003.960,857.613,1003.414,856.601C1002.070,854.108,1002.455,852.609,1001.221,850.757C999.441,848.080,997.287,848.660,996.504,848.739C996.324,848.766,988.159,850.992,988.159,850.992ZZ" style="fill:#5c9823"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564ab">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564ab">
-              <path d="M979.903,837.116C979.314,836.838,970.929,833.855,970.929,833.855L969.920,830.829C969.920,830.829,967.285,828.136,968.525,825.183C969.603,822.619,972.030,822.536,972.030,822.536C972.030,822.536,972.737,820.780,974.677,820.098C977.157,819.224,979.012,820.978,979.012,820.978L990.915,819.482L998.516,821.738C998.516,821.738,999.369,821.154,1000.316,821.474C1001.301,821.805,1001.390,823.087,1001.459,823.654C1001.525,824.194,995.095,833.409,995.095,833.409L999.878,846.315L997.909,850.470C997.909,850.470,997.616,850.996,996.804,851.353C996.332,851.560,995.643,851.549,995.643,851.549L992.249,846.827L979.903,837.116ZZ" style="fill:#96010c"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564ac">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564ac">
-              <path d="M990.094,817.301L988.596,817.870L987.788,819.091L988.685,820.712C988.685,820.712,989.119,821.995,988.281,822.920C987.444,823.845,985.740,825.461,985.740,825.461L985.034,828.161C985.034,828.161,984.058,828.133,982.387,827.817C980.824,827.518,978.616,826.433,978.616,826.433L975.451,827.142C975.451,827.142,974.842,827.264,974.500,827.939C974.010,828.918,974.746,830.466,976.592,831.537C978.367,832.566,981.808,833.442,982.602,833.731C983.396,834.020,984.572,834.344,985.230,834.494C985.864,834.638,986.645,834.882,986.913,834.744C987.180,834.602,987.313,833.509,988.367,832.180C989.421,830.850,990.488,829.674,992.396,828.306C994.303,826.939,996.091,825.486,996.596,824.906C997.101,824.327,995.455,821.888,994.202,820.471C992.948,819.054,990.098,817.116,990.094,817.301ZZ" style="fill:#af0c1b"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564ad">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564ad">
-              <path d="M984.735,826.561C984.417,827.408,984.755,828.186,984.755,828.186C984.755,828.186,986.099,828.532,987.339,828.590C989.589,828.694,994.120,827.137,996.034,825.490C997.948,823.843,998.773,822.666,998.804,821.528C998.838,820.191,998.437,817.630,995.502,816.433C992.137,815.060,988.386,817.466,988.555,818.034C988.723,818.603,990.233,817.663,990.844,819.727C991.456,821.791,990.013,823.576,988.247,824.377C986.481,825.178,985.215,825.276,984.735,826.561ZZ" style="fill:#db132c"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564ae">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564ae">
-              <path d="M974.801,827.563C974.801,827.563,974.344,826.793,974.839,825.921C975.582,824.589,976.758,823.658,977.276,822.608C977.795,821.559,978.415,819.676,980.965,818.526C984.744,816.820,987.727,817.540,988.833,819.185C989.938,820.829,989.043,821.771,987.948,822.127C986.852,822.483,986.084,822.145,984.165,823.095C980.913,824.704,980.268,826.898,980.011,827.163C979.747,827.424,978.554,827.133,977.056,827.173C975.975,827.202,975.270,827.483,974.801,827.563ZZ" style="fill:#f71538"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564af">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564af">
-              <path d="M989.588,836.058C989.588,836.058,989.598,833.523,991.448,831.370C993.302,829.217,994.959,828.685,997.480,826.500C1000.001,824.314,1000.749,823.147,1001.124,822.704C1001.509,822.250,1001.858,821.837,1002.354,822.286C1002.673,822.577,1002.732,824.137,1002.164,825.838C1001.585,827.574,1000.831,828.658,1000.815,831.356C1000.790,834.917,1003.577,837.322,1003.097,843.174C1002.941,845.067,1001.856,847.078,1000.717,848.513C999.578,849.948,997.573,850.789,997.573,850.789C997.573,850.789,998.158,850.055,998.000,848.041C997.922,847.051,997.729,845.311,996.982,843.619C994.844,838.780,989.588,836.058,989.588,836.058ZZ" style="fill:#cd0e1f"></path>
-            </g>
-          </g>
-          <g id="shape-d26931c1-4f24-80c0-8005-a95ed9d564b0">
-            <defs></defs>
-            <g class="fills" id="fills-d26931c1-4f24-80c0-8005-a95ed9d564b0">
-              <path d="M973.774,839.981C974.151,841.070,974.822,845.241,976.449,848.268C977.728,850.650,981.669,854.362,986.950,854.232C991.809,854.114,996.254,851.435,996.254,851.435C996.254,851.435,997.162,847.827,994.918,843.625C992.471,839.044,986.523,836.863,980.081,835.751C972.340,834.414,969.925,830.756,969.925,830.756C969.925,830.756,967.532,830.833,967.568,832.996C967.624,836.313,973.206,838.334,973.774,839.981ZZ" style="fill:#e2122d"></path>
-            </g>
-          </g>
-        </g>
-      </svg>
-    </div>
-    <!-- rect: Rectangle -->
-    <div class="shape rect rectangle-a95eefa7f639">
-    </div>
-    <!-- text: Yes -->
-    <div class="shape text yes-a95f476768dd">
-      <div class="text-node-html" id="html-text-node-d26931c1-4f24-80c0-8005-a95f476768dd" data-x="734" data-y="886">
-        <div class="root rich-text root-0" style="display:flex;white-space:break-spaces;align-items:flex-start" xmlns="http://www.w3.org/1999/xhtml">
-          <div class="paragraph-set root-0-paragraph-set-0">
-            <p class="paragraph root-0-paragraph-set-0-paragraph-0" dir="ltr"><span class="text-node root-0-paragraph-set-0-paragraph-0-text-0" style="color:rgba(255, 255, 255, 1);text-transform:none;line-break:auto;overflow-wrap:initial;white-space:pre;font-size:24px;text-rendering:geometricPrecision;caret-color:rgba(255, 255, 255, 1);text-decoration:none;--font-id:arial;--fills:[[&quot;^ &quot;,&quot;~:fill-color&quot;,&quot;#ffffff&quot;,&quot;~:fill-opacity&quot;,1]];letter-spacing:0px;font-family:&quot;arial&quot;;font-style:normal;font-weight:400">Yes</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- rect: Rectangle -->
-    <div class="shape rect rectangle-a95f76123eac">
-    </div>
-    <!-- text: No -->
-    <div class="shape text no-a95f76123ead">
-      <div class="text-node-html" id="html-text-node-d26931c1-4f24-80c0-8005-a95f76123ead" data-x="841" data-y="885">
-        <div class="root rich-text root-0" style="display:flex;white-space:break-spaces;align-items:flex-start" xmlns="http://www.w3.org/1999/xhtml">
-          <div class="paragraph-set root-0-paragraph-set-0">
-            <p class="paragraph root-0-paragraph-set-0-paragraph-0" dir="ltr"><span class="text-node root-0-paragraph-set-0-paragraph-0-text-0" style="color:rgba(255, 255, 255, 1);text-transform:none;line-break:auto;overflow-wrap:initial;white-space:pre;font-size:24px;text-rendering:geometricPrecision;caret-color:rgba(255, 255, 255, 1);text-decoration:none;--font-id:arial;--fills:[[&quot;^ &quot;,&quot;~:fill-color&quot;,&quot;#ffffff&quot;,&quot;~:fill-opacity&quot;,1]];letter-spacing:0px;font-family:&quot;arial&quot;;font-style:normal;font-weight:400">No</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- rect: Rectangle -->
-    <div class="shape rect rectangle-a95f8124dd3d">
-    </div>
-    <!-- text: Maybe -->
-    <div class="shape text maybe-a95f8124dd3e">
-      <div class="text-node-html" id="html-text-node-d26931c1-4f24-80c0-8005-a95f8124dd3e" data-x="944.0000000000002" data-y="885">
-        <div class="root rich-text root-0" style="display:flex;white-space:break-spaces;align-items:flex-start" xmlns="http://www.w3.org/1999/xhtml">
-          <div class="paragraph-set root-0-paragraph-set-0">
-            <p class="paragraph root-0-paragraph-set-0-paragraph-0" dir="ltr"><span class="text-node root-0-paragraph-set-0-paragraph-0-text-0" style="color:rgba(255, 255, 255, 1);text-transform:none;line-break:auto;overflow-wrap:initial;white-space:pre;font-size:24px;text-rendering:geometricPrecision;caret-color:rgba(255, 255, 255, 1);text-decoration:none;--font-id:arial;--fills:[[&quot;^ &quot;,&quot;~:fill-color&quot;,&quot;#ffffff&quot;,&quot;~:fill-opacity&quot;,1]];letter-spacing:0px;font-family:&quot;arial&quot;;font-style:normal;font-weight:400">Maybe</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- rect: Rectangle -->
-    <div class="shape rect rectangle-a960715e70e7">
-    </div>
-    <!-- text: Submit -->
-    <div class="shape text submit-a960f575bdb4">
-      <div class="text-node-html" id="html-text-node-d26931c1-4f24-80c0-8005-a960f575bdb4" data-x="804" data-y="933">
-        <div class="root rich-text root-0" style="display:flex;white-space:break-spaces;align-items:flex-start" xmlns="http://www.w3.org/1999/xhtml">
-          <div class="paragraph-set root-0-paragraph-set-0">
-            <p class="paragraph root-0-paragraph-set-0-paragraph-0" dir="ltr"><span class="text-node root-0-paragraph-set-0-paragraph-0-text-0" style="color:rgba(255, 255, 255, 1);text-transform:none;line-break:auto;overflow-wrap:initial;white-space:pre;font-size:24px;text-rendering:geometricPrecision;caret-color:rgba(255, 255, 255, 1);text-decoration:none;--font-id:arial;--fills:[[&quot;^ &quot;,&quot;~:fill-color&quot;,&quot;#ffffff&quot;,&quot;~:fill-opacity&quot;,1]];letter-spacing:0px;font-family:&quot;arial&quot;;font-style:normal;font-weight:400">Submit</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-    
+    </nav>
+
+    <section v-for="(color, index) in colors" :key="index" :style="{ background: color }" v-if="current == index"></section>
+  </main>
+
+  <!-- Add Vue.js and Anime.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data() {
+        return {
+          colors: ["#D53738", "#638867", "#FAF429"],
+          current: 0
+        };
+      },
+      mounted() {
+        let timeline = anime.timeline({
+          autoplay: true,
+          duration: 10000,
+          easing: "linear",
+          loop: true
+        });
+
+        this.colors.forEach((color, index) => {
+          timeline.add({
+            targets: document.querySelectorAll("nav > div")[index].children[0],
+            width: "100%",
+            changeBegin: () => {
+              this.current = index;
+            }
+          });
+        });
+
+        let hammertime = new Hammer(document.querySelector("#app"));
+
+        hammertime.on("press", () => {
+          timeline.pause();
+        });
+
+        hammertime.on("pressup", () => {
+          timeline.play();
+        });
+
+        hammertime.on("tap", (e) => {
+          if (e.center.x > window.innerWidth / 2) {
+            if (this.current < this.colors.length - 1) {
+              this.current += 1;
+
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          } else {
+            if (this.current > 0) {
+              this.current -= 1;
+
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
-<script>
-</script>
