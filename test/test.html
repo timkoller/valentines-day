@@ -1,138 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story Style Website</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue & Anime.js Color Animation</title>
+  <style>
+    html, body, main, section {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      box-sizing: border-box;
+      display: grid;
+      grid-column-gap: 1em;
+      grid-template-columns: repeat(3, 1fr);
+      height: 0.5em;
+      padding: 0 1em;
+      position: fixed;
+      top: 1em;
+      width: 100%;
+    }
+
+    nav > div {
+      background: rgba(0,0,0,0.25);
+      height: 100%;
+    }
+
+    nav > div > div {
+      background: black;
+      height: 100%;
+      width: 0%;
+    }
+
+    section {
+      height: 100%;
+      width: 100%;
+      transition: background 1s;
+    }
+  </style>
 </head>
 <body>
-    <div class="progress-container" id="progressContainer"></div>
-    <div class="story-container" id="storyContainer">
-        <!-- Slides will be dynamically added here -->
-    </div>
-    <script src="script.js"></script>
-    <script>
-        const slides = [
-            { text: "Page 1", background: "url('image1.jpg')" },
-            { text: "Page 2", background: "url('image2.jpg')" },
-            { text: "Page 3", background: "url('image3.jpg')" },
-            { text: "Page 4", background: "url('image4.jpg')" },
-            { text: "Page 5", background: "url('image5.jpg')" }
-        ];
+  <main id="app">
+    <nav>
+      <div v-for="(color, index) in colors" :key="index">
+        <div></div>
+      </div>
+    </nav>
 
-        const container = document.getElementById("storyContainer");
-        const progressContainer = document.getElementById("progressContainer");
+    <section v-for="(color, index) in colors" :key="index" :style="{ background: color }" v-if="current == index"></section>
+  </main>
 
-        slides.forEach(() => {
-            const progressWrapper = document.createElement("div");
-            progressWrapper.classList.add("progress-wrapper");
-            
-            const progressBar = document.createElement("div");
-            progressBar.classList.add("progress-bar");
-            
-            progressWrapper.appendChild(progressBar);
-            progressContainer.appendChild(progressWrapper);
+  <!-- Add Vue.js and Anime.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data() {
+        return {
+          colors: ["#D53738", "#638867", "#FAF429"],
+          current: 0
+        };
+      },
+      mounted() {
+        let timeline = anime.timeline({
+          autoplay: true,
+          duration: 10000,
+          easing: "linear",
+          loop: true
         });
 
-        let currentIndex = 0;
-        let progressInterval;
-
-        function showSlide(index) {
-            const slides = document.querySelectorAll(".story-slide");
-            const progressBars = document.querySelectorAll(".progress-bar");
-            if (index >= slides.length) index = 0;
-            if (index < 0) index = slides.length - 1;
-
-            slides.forEach((slide, i) => {
-                slide.style.display = i === index ? "flex" : "none";
-            });
-
-            progressBars.forEach((bar, i) => {
-                if (i < index) {
-                    bar.style.width = "100%";
-                    bar.style.transition = "none";
-                } else if (i === index) {
-                    bar.style.width = "0%";
-                    bar.style.transition = "width 10s linear";
-                    setTimeout(() => bar.style.width = "100%", 50);
-                } else {
-                    bar.style.width = "0%";
-                    bar.style.transition = "none";
-                }
-            });
-            
-            clearInterval(progressInterval);
-            progressInterval = setTimeout(() => showSlide(index + 1), 10000);
-            currentIndex = index;
-        }
-
-        document.body.addEventListener("click", (e) => {
-            const x = e.clientX;
-            if (x < window.innerWidth / 2) {
-                showSlide(currentIndex - 1);
-            } else {
-                showSlide(currentIndex + 1);
+        this.colors.forEach((color, index) => {
+          timeline.add({
+            targets: document.querySelectorAll("nav > div")[index].children[0],
+            width: "100%",
+            changeBegin: () => {
+              this.current = index;
             }
+          });
         });
 
-        showSlide(0);
-    </script>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+        let hammertime = new Hammer(document.querySelector("#app"));
 
-        .progress-container {
-            display: flex;
-            position: absolute;
-            top: 10px;
-            width: 90%;
-            gap: 5px;
-        }
+        hammertime.on("press", () => {
+          timeline.pause();
+        });
 
-        .progress-wrapper {
-            flex-grow: 1;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            overflow: hidden;
-        }
+        hammertime.on("pressup", () => {
+          timeline.play();
+        });
 
-        .progress-bar {
-            height: 100%;
-            background: rgb(0, 0, 0);
-            width: 0;
-        }
+        hammertime.on("tap", (e) => {
+          if (e.center.x > window.innerWidth / 2) {
+            if (this.current < this.colors.length - 1) {
+              this.current += 1;
 
-        .story-container {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-        }
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          } else {
+            if (this.current > 0) {
+              this.current -= 1;
 
-        .story-slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background-size: cover;
-            background-position: center;
-            color: rgb(0, 0, 0);
-            font-size: 2rem;
-        }
-    </style>
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
