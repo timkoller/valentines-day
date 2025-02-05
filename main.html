@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vue & Anime.js Image Animation</title>
+  <title>Vue & Time Units Animation</title>
   <!-- Link to Google Fonts (Poppins for a modern look) -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -12,14 +12,15 @@
       width: 100%;
       margin: 0;
       padding: 0;
+      font-family: 'Poppins', sans-serif;
     }
 
     nav {
       box-sizing: border-box;
       display: grid;
       grid-column-gap: 0.5em;
-      grid-template-columns: repeat(3, 1fr);
-      height: 0.1em;
+      grid-template-columns: repeat(7, 1fr);
+      height: 0.2em;
       padding: 0 0.5em;
       position: fixed;
       top: 0.5em;
@@ -49,26 +50,42 @@
     }
 
     .text-container {
-      font-family: 'Poppins', sans-serif;
-      font-size: 3em; /* Adjusted size */
-      color: white;
-      /*text-shadow: 2px 2px 5px rgba(0,0,0,0.7);*/
       text-align: center;
       line-height: 1.4;
+      color: white;
+    }
+
+    .text-container .number {
+      font-size: 4em;
+      font-weight: 700;
+      color: #FAF429; /* Modern yellow for the numbers */
+    }
+
+    .text-container .message {
+      font-size: 2em;
+      font-weight: 400;
+      color: #FFFFFF;
+      margin-top: 1em;
+    }
+
+    /* Modern and clean layout */
+    body {
+      background-color: #282c34;
     }
   </style>
 </head>
 <body>
   <main id="app">
     <nav>
-      <div v-for="(image, index) in images" :key="index">
+      <div v-for="(time, index) in times" :key="index">
         <div></div>
       </div>
     </nav>
 
-    <section v-for="(image, index) in images" :key="index" :style="{ backgroundImage: 'url(' + image + ')' }" v-if="current == index">
+    <section v-for="(time, index) in times" :key="index" :style="{ backgroundImage: 'url(' + images[index] + ')' }" v-if="current == index">
       <div class="text-container">
-        {{ texts[current] }}
+        <div class="number">{{ time.value }}</div>
+        <div class="message">{{ time.message }}</div>
       </div>
     </section>
   </main>
@@ -82,15 +99,64 @@
     const app = new Vue({
       el: "#app",
       data() {
+        const startDate = new Date("2025-01-01T00:00:00Z"); // Hardcoded start date (change as needed)
+        const now = new Date();
+        
+        const monthsPassed = this.getMonthsDifference(startDate, now);
+        const weeksPassed = this.getWeeksDifference(startDate, now);
+        const daysPassed = this.getDaysDifference(startDate, now);
+        const hoursPassed = this.getHoursDifference(startDate, now);
+        const minutesPassed = this.getMinutesDifference(startDate, now);
+        const secondsPassed = this.getSecondsDifference(startDate, now);
+
         return {
+          times: [
+            { value: monthsPassed, message: `${monthsPassed} Months have passed since the start of the year` },
+            { value: weeksPassed, message: `${weeksPassed} Weeks have gone by since January 1st` },
+            { value: daysPassed, message: `${daysPassed} Days have passed since that moment` },
+            { value: hoursPassed, message: `${hoursPassed} Hours have elapsed since the clock started ticking` },
+            { value: minutesPassed, message: `${minutesPassed} Minutes have passed, and counting` },
+            { value: secondsPassed, message: `${secondsPassed} Seconds have slipped away since then` },
+            { value: "", message: "" },
+          ],
           images: [
-            "./images/IMG-20241103-WA0001.jpg", // URL of the first image
-            "./images/IMG-20241112-WA0003.jpg", // URL of the second image
-            "./images/IMG-20241203-WA0006.jpg"  // URL of the third image
-          ], // Array of image URLs
-          texts: ["This is the first page", "This is the second page", "This is the third page"], // Array of corresponding texts
-          current: 0 // Current page index
+            "https://example.com/image1.jpg", // Replace with actual image URL
+            "https://example.com/image2.jpg",
+            "https://example.com/image3.jpg",
+            "https://example.com/image4.jpg",
+            "https://example.com/image5.jpg",
+            "https://example.com/image6.jpg",
+            "https://example.com/image7.jpg", // 7th page image
+          ],
+          current: 0
         };
+      },
+      methods: {
+        getMonthsDifference(start, end) {
+          const years = end.getFullYear() - start.getFullYear();
+          const months = end.getMonth() - start.getMonth();
+          return years * 12 + months;
+        },
+        getWeeksDifference(start, end) {
+          const diffInTime = end - start;
+          return Math.floor(diffInTime / (1000 * 3600 * 24 * 7)); // Weeks
+        },
+        getDaysDifference(start, end) {
+          const diffInTime = end - start;
+          return Math.floor(diffInTime / (1000 * 3600 * 24)); // Days
+        },
+        getHoursDifference(start, end) {
+          const diffInTime = end - start;
+          return Math.floor(diffInTime / (1000 * 3600)); // Hours
+        },
+        getMinutesDifference(start, end) {
+          const diffInTime = end - start;
+          return Math.floor(diffInTime / (1000 * 60)); // Minutes
+        },
+        getSecondsDifference(start, end) {
+          const diffInTime = end - start;
+          return Math.floor(diffInTime / 1000); // Seconds
+        }
       },
       mounted() {
         let timeline = anime.timeline({
@@ -100,7 +166,7 @@
           loop: true
         });
 
-        this.images.forEach((image, index) => {
+        this.times.forEach((time, index) => {
           timeline.add({
             targets: document.querySelectorAll("nav > div")[index].children[0],
             width: "100%",
@@ -122,9 +188,8 @@
 
         hammertime.on("tap", (e) => {
           if (e.center.x > window.innerWidth / 2) {
-            if (this.current < this.images.length - 1) {
+            if (this.current < this.times.length - 1) {
               this.current += 1;
-
               timeline.pause();
               timeline.seek(this.current * 5000);
               timeline.play();
@@ -132,7 +197,6 @@
           } else {
             if (this.current > 0) {
               this.current -= 1;
-
               timeline.pause();
               timeline.seek(this.current * 5000);
               timeline.play();
