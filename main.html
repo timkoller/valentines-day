@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vue & Anime.js Color Animation</title>
+  <title>Vue & Anime.js Image Animation</title>
+  <!-- Link to Google Fonts (Poppins for a modern look) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     html, body, main, section {
       height: 100%;
@@ -17,7 +19,7 @@
       display: grid;
       grid-column-gap: 0.5em;
       grid-template-columns: repeat(3, 1fr);
-      height: 0.2em;
+      height: 0.1em;
       padding: 0 0.5em;
       position: fixed;
       top: 0.5em;
@@ -30,7 +32,7 @@
     }
 
     nav > div > div {
-      background: black;
+      background: rgb(255, 255, 255);
       height: 100%;
       width: 0%;
     }
@@ -39,18 +41,36 @@
       height: 100%;
       width: 100%;
       transition: background 1s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .text-container {
+      font-family: 'Poppins', sans-serif;
+      font-size: 3em; /* Adjusted size */
+      color: white;
+      /*text-shadow: 2px 2px 5px rgba(0,0,0,0.7);*/
+      text-align: center;
+      line-height: 1.4;
     }
   </style>
 </head>
 <body>
   <main id="app">
     <nav>
-      <div v-for="(color, index) in colors" :key="index">
+      <div v-for="(image, index) in images" :key="index">
         <div></div>
       </div>
     </nav>
 
-    <section v-for="(color, index) in colors" :key="index" :style="{ background: color }" v-if="current == index"></section>
+    <section v-for="(image, index) in images" :key="index" :style="{ backgroundImage: 'url(' + image + ')' }" v-if="current == index">
+      <div class="text-container">
+        {{ texts[current] }}
+      </div>
+    </section>
   </main>
 
   <!-- Add Vue.js and Anime.js from CDN -->
@@ -63,19 +83,24 @@
       el: "#app",
       data() {
         return {
-          colors: ["#D53738", "#638867", "#FAF429"],
-          current: 0
+          images: [
+            "./images/IMG-20241103-WA0001.jpg", // URL of the first image
+            "./images/IMG-20241112-WA0003.jpg", // URL of the second image
+            "./images/IMG-20241203-WA0006.jpg"  // URL of the third image
+          ], // Array of image URLs
+          texts: ["This is the first page", "This is the second page", "This is the third page"], // Array of corresponding texts
+          current: 0 // Current page index
         };
       },
       mounted() {
         let timeline = anime.timeline({
           autoplay: true,
-          duration: 10000,
+          duration: 5000,
           easing: "linear",
           loop: true
         });
 
-        this.colors.forEach((color, index) => {
+        this.images.forEach((image, index) => {
           timeline.add({
             targets: document.querySelectorAll("nav > div")[index].children[0],
             width: "100%",
@@ -97,11 +122,11 @@
 
         hammertime.on("tap", (e) => {
           if (e.center.x > window.innerWidth / 2) {
-            if (this.current < this.colors.length - 1) {
+            if (this.current < this.images.length - 1) {
               this.current += 1;
 
               timeline.pause();
-              timeline.seek(this.current * 10000);
+              timeline.seek(this.current * 5000);
               timeline.play();
             }
           } else {
@@ -109,7 +134,7 @@
               this.current -= 1;
 
               timeline.pause();
-              timeline.seek(this.current * 10000);
+              timeline.seek(this.current * 5000);
               timeline.play();
             }
           }
