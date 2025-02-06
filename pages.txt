@@ -1,0 +1,9 @@
+Page 1:
+{days} have passed since the 28th of August
+
+Page 2:
+       {seconds} seconds
+       {hours} hours
+That's {weeks} weeks     since this very special moment.
+
+Page 3:

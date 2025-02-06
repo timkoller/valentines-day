@@ -1,121 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vue & Anime.js Color Animation</title>
-  <style>
-    html, body, main, section {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav {
-      box-sizing: border-box;
-      display: grid;
-      grid-column-gap: 1em;
-      grid-template-columns: repeat(3, 1fr);
-      height: 0.5em;
-      padding: 0 1em;
-      position: fixed;
-      top: 1em;
-      width: 100%;
-    }
-
-    nav > div {
-      background: rgba(0,0,0,0.25);
-      height: 100%;
-    }
-
-    nav > div > div {
-      background: black;
-      height: 100%;
-      width: 0%;
-    }
-
-    section {
-      height: 100%;
-      width: 100%;
-      transition: background 1s;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrolling Text</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #333;
+            font-family: Arial, sans-serif;
+            padding: 0px;
+            text-align: left;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            font-size: 1.8rem;
+            font-weight: bold;
+            line-height: 2.5rem;
+            color: white;
+            max-width: 90%;
+            flex-wrap: wrap;
+        }
+        .changing-text-wrapper {
+            height: auto;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-right: 10px;
+        }
+        .changing-text {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .changing-text div {
+            padding: 0;
+            height: auto;
+            display: flex;
+            align-items: center;
+            opacity: 0.1;
+            transition: opacity 0.5s;
+            color: rgb(255, 204, 0);
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+        .changing-text div.active {
+            opacity: 1;
+        }
+        .fixed-text {
+            text-align: left;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        @media (max-width: 600px) {
+            .container {
+                font-size: 1.5rem;
+                line-height: 2rem;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .changing-text-wrapper {
+                height: auto;
+                margin-right: 5px;
+            }
+            .changing-text div {
+                height: auto;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main id="app">
-    <nav>
-      <div v-for="(color, index) in colors" :key="index">
-        <div></div>
-      </div>
-    </nav>
+    <div class="container">
+        <div class="changing-text-wrapper">
+            <div class="changing-text">
+                <div class="active">34 weeks</div>
+                <div>3758 hours</div>
+                <div>236,473 minutes</div>
+                <div>13,592,384 seconds</div>
+            </div>
+        </div>
+        <span class="fixed-text">or</span>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const changingText = document.querySelector(".changing-text");
+            const items = document.querySelectorAll(".changing-text div");
+            let index = 0;
 
-    <section v-for="(color, index) in colors" :key="index" :style="{ background: color }" v-if="current == index"></section>
-  </main>
-
-  <!-- Add Vue.js and Anime.js from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
-
-  <script>
-    const app = new Vue({
-      el: "#app",
-      data() {
-        return {
-          colors: ["#D53738", "#638867", "#FAF429"],
-          current: 0
-        };
-      },
-      mounted() {
-        let timeline = anime.timeline({
-          autoplay: true,
-          duration: 10000,
-          easing: "linear",
-          loop: true
-        });
-
-        this.colors.forEach((color, index) => {
-          timeline.add({
-            targets: document.querySelectorAll("nav > div")[index].children[0],
-            width: "100%",
-            changeBegin: () => {
-              this.current = index;
+            function updateText() {
+                items.forEach(item => item.classList.remove("active"));
+                items[index].classList.add("active");
+                changingText.style.transform = `translateY(-${index * 2.5}rem)`;
+                index = (index + 1) % items.length;
             }
-          });
+            
+            //updateText(); // Ensure immediate update on load
+            setInterval(updateText, 2000);
         });
-
-        let hammertime = new Hammer(document.querySelector("#app"));
-
-        hammertime.on("press", () => {
-          timeline.pause();
-        });
-
-        hammertime.on("pressup", () => {
-          timeline.play();
-        });
-
-        hammertime.on("tap", (e) => {
-          if (e.center.x > window.innerWidth / 2) {
-            if (this.current < this.colors.length - 1) {
-              this.current += 1;
-
-              timeline.pause();
-              timeline.seek(this.current * 10000);
-              timeline.play();
-            }
-          } else {
-            if (this.current > 0) {
-              this.current -= 1;
-
-              timeline.pause();
-              timeline.seek(this.current * 10000);
-              timeline.play();
-            }
-          }
-        });
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
