@@ -1,9 +1,88 @@
 Page 1:
-{days} have passed since the 28th of August
+{months} months have passed since the 28th of August
 
 Page 2:
-       {seconds} seconds
-       {hours} hours
-That's {weeks} weeks     since this very special moment.
+That's {days} days since this very special moment!
 
 Page 3:
+Or {seconds} seconds! That's a lot, huh?
+
+Page 4:
+These {days} days are {percent} of my life.
+
+Page 5:
+{percent} of my life, that I have spent with YOU.
+
+Page 6:
+The best {percent} of my life!
+
+Page 7:
+{days} days is {percent linda} of your life btw.
+
+Page 8:
+And I am certain that when I am 80 I will have spent {percent old} of my life with you.
+
+Page 9:
+Because you are the love of my life and that will never change!!
+Pinky Promise!!
+
+Page 10:
+All of this leads up to one very special question
+
+Page 11:
+Will you be my valentine?
+
+YES     NO
+
+
+
+Prompt:
+please revert that change and use the version before that:
+I now have my final version. I am going to give you list with every page and I will write what I want to be on the pages:
+Page 1:
+- Text: "{months} months have passed since the 28th of August."
+- For the {months} please calculate the months that have passed since a specific hardcoded date
+- Please make the {months} number the same font size but make it have a different font color like the yellow you used
+
+Page 2:
+- Text: "That's {days} days since this very special moment!"
+- Please do the same as above but for the {days} calculate the number of days that have passed since the same hardcoded date as above
+
+Page 3:
+- Text: "Or {seconds} seconds! That's a lot, huh?"
+- Same as above but for the {seconds} calculate the seconds since the same specific date and time as above
+ 
+Page 4:
+- Text: "These {days} days are {percent} of my life."
+- for the {days} use the same number as on page 2.
+- for the {percent} please calculate the days that have passed since another date (lets call it date2) and then divide date1 by date2 and show it as a percent number.
+
+Page 5:
+- Text: "{percent} of my life, that I have spent with YOU."
+- For the {percent} just do the same as above
+
+Page 6:
+- Text: "The best {percent} of my life!"
+- Again just use the same number for {percent} as above
+
+Page 7:
+- Text: "{days} days is {percent linda} of your life btw."
+- For {days} just use the same as page 1
+- for {percent linda} please do the same as on page 4 but please use a third date (date3) to calculate the days that have passed since then and divide the {days} with that number
+
+Page 8:
+- Text: "And I am certain that when I am 80 I will have spent {percent old} of my life with you."
+- For the {percent old} just divide a fixed, hardcoded amount of days by another fixed, hardcoded amount of days and show that as a percent value
+
+Page 9:
+- Text: "Because you are the love of my life and that will never change!!
+Pinky Promise!!"
+
+Page 10:
+- Text: "All of this leads up to one very special question"
+
+Page 11:
+- Text: "Will you be my valentine?"
+- Then add two buttons with the text "YES" and "NO". Please give the buttons a clean and modern design and also it shouldn't go the next page (actually the first page) but just pause. It should still be possible to go back to the previous page where the timer should continue as usual
+- When the yes button is pressed the background image should change and the text should change to "YAYYYYYYY"
+- When the no button is pressed the background image should change and the text should change to "Wrong. Please try again" and a "Try Again" button should appear and if that button is pressed the page 11 should restart
