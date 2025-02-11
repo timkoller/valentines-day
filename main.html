@@ -54,7 +54,6 @@
       color: white;
       text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
       opacity: 0;
-      transform: translateX(-50px);
     }
 
     .text-container .number {
@@ -151,18 +150,19 @@
         getSecondsDifference(start, end) {
           return Math.floor((end - start) / 1000);
         },
-        updateTime() {
-          const now = new Date();
-          this.times.forEach((time, index) => {
-            this.times[index].value = this[`get${time.message.split(" ")[1]}Difference`](this.startDate, now);
-            this.times[index].message = `${this.times[index].value} ${time.message.split(" ")[1]} have passed`;
-          });
-        },
         animateText() {
+          const directions = [
+            { translateX: [-50, 0] }, // Left
+            { translateY: [50, 0] },  // Bottom
+            { translateY: [-50, 0] }, // Top
+            { translateX: [50, 0] },  // Right
+          ];
+          const animationProps = directions[this.current % directions.length];
+
           anime({
             targets: this.$refs.textContainer,
             opacity: [0, 1],
-            translateX: [-50, 0],
+            ...animationProps,
             easing: "easeOutExpo",
             duration: 1000
           });
@@ -174,8 +174,6 @@
         }
       },
       mounted() {
-        setInterval(this.updateTime, 1000);
-
         let timeline = anime.timeline({
           autoplay: true,
           duration: 5000,
@@ -201,15 +199,12 @@
         hammertime.on("tap", (e) => {
           if (e.center.x > window.innerWidth / 2 && this.current < this.times.length - 1) {
             this.current++;
-            timeline.pause();
-            timeline.seek(this.current * 5000);
-            timeline.play();
           } else if (e.center.x <= window.innerWidth / 2 && this.current > 0) {
             this.current--;
-            timeline.pause();
-            timeline.seek(this.current * 5000);
-            timeline.play();
           }
+          timeline.pause();
+          timeline.seek(this.current * 5000);
+          timeline.play();
         });
 
         this.animateText();
