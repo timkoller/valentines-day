@@ -101,21 +101,11 @@
     const app = new Vue({
       el: "#app",
       data() {
-        const startDate = new Date("2024-08-28T21:30:00Z");
-        const now = new Date();
-        
         return {
-          startDate: startDate,
+          startDate: new Date("2024-08-28T21:30:00Z"),
           current: 0,
-          times: [
-            { value: this.getMonthsDifference(startDate, now), message: `${this.getMonthsDifference(startDate, now)} Months have passed since the start` },
-            { value: this.getWeeksDifference(startDate, now), message: `${this.getWeeksDifference(startDate, now)} Weeks have gone by since the 28th of August` },
-            { value: this.getDaysDifference(startDate, now), message: `${this.getDaysDifference(startDate, now)} Days have passed since that moment` },
-            { value: this.getHoursDifference(startDate, now), message: `${this.getHoursDifference(startDate, now)} Hours have elapsed since the clock started ticking` },
-            { value: this.getMinutesDifference(startDate, now), message: `${this.getMinutesDifference(startDate, now)} Minutes have passed, and counting` },
-            { value: this.getSecondsDifference(startDate, now), message: `${this.getSecondsDifference(startDate, now)} Seconds have slipped away since then` },
-            { value: "Enjoy the moment", message: "This page is a reminder to live in the now!" },
-          ],
+          now: new Date(), // Store `now` in data and update it every second
+          intervalId: null,
           images: [
             "./images/IMG-20241103-WA0001.jpg",
             "./images/IMG-20241112-WA0003.jpg",
@@ -124,8 +114,21 @@
             "./images/Snapchat-933208961.jpg",
             "./images/PXL_20250125_095321814.MP.jpg",
             "https://example.com/image7.jpg",
-          ]
+          ],
         };
+      },
+      computed: {
+        times() {
+          return [
+            { value: this.getMonthsDifference(this.startDate, this.now), message: `${this.getMonthsDifference(this.startDate, this.now)} Months have passed since the start` },
+            { value: this.getWeeksDifference(this.startDate, this.now), message: `${this.getWeeksDifference(this.startDate, this.now)} Weeks have gone by since the 28th of August` },
+            { value: this.getDaysDifference(this.startDate, this.now), message: `${this.getDaysDifference(this.startDate, this.now)} Days have passed since that moment` },
+            { value: this.getHoursDifference(this.startDate, this.now), message: `${this.getHoursDifference(this.startDate, this.now)} Hours have elapsed since the clock started ticking` },
+            { value: this.getMinutesDifference(this.startDate, this.now), message: `${this.getMinutesDifference(this.startDate, this.now)} Minutes have passed, and counting` },
+            { value: this.getSecondsDifference(this.startDate, this.now), message: `${this.getSecondsDifference(this.startDate, this.now)} Seconds have slipped away since then` },
+            { value: "Enjoy the moment", message: "This page is a reminder to live in the now!" },
+          ];
+        },
       },
       methods: {
         getMonthsDifference(start, end) {
@@ -158,7 +161,7 @@
             { translateX: [50, 0] },  // Right
           ];
           const animationProps = directions[this.current % directions.length];
-
+  
           anime({
             targets: this.$refs.textContainer,
             opacity: [0, 1],
@@ -166,12 +169,12 @@
             easing: "easeOutExpo",
             duration: 1000
           });
-        }
+        },
       },
       watch: {
         current() {
           this.$nextTick(this.animateText);
-        }
+        },
       },
       mounted() {
         let timeline = anime.timeline({
@@ -180,7 +183,7 @@
           easing: "linear",
           loop: true
         });
-
+  
         this.times.forEach((_, index) => {
           timeline.add({
             targets: document.querySelectorAll("nav > div")[index].children[0],
@@ -190,12 +193,12 @@
             }
           });
         });
-
+  
         let hammertime = new Hammer(document.querySelector("#app"));
-
+  
         hammertime.on("press", () => timeline.pause());
         hammertime.on("pressup", () => timeline.play());
-
+  
         hammertime.on("tap", (e) => {
           if (e.center.x > window.innerWidth / 2 && this.current < this.times.length - 1) {
             this.current++;
@@ -206,9 +209,17 @@
           timeline.seek(this.current * 5000);
           timeline.play();
         });
-
+  
         this.animateText();
-      }
+  
+        // Update `now` every second
+        this.intervalId = setInterval(() => {
+          this.now = new Date(); // This will force `times` to update
+        }, 1000);
+      },
+      beforeDestroy() {
+        clearInterval(this.intervalId); // Clean up interval on component destroy
+      },
     });
   </script>
 </body>
