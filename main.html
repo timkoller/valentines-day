@@ -10,7 +10,7 @@
       height: 100%;
       width: 100%;
       margin: 0;
-      padding: 0;
+      padding: 20;
       font-family: 'Poppins', sans-serif;
     }
 
@@ -18,7 +18,7 @@
       box-sizing: border-box;
       display: grid;
       grid-column-gap: 0.5em;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(11, 1fr);
       height: 0.1em;
       padding: 0 0.5em;
       position: fixed;
@@ -65,8 +65,10 @@
     .text-container .message {
       font-size: 2em;
       font-weight: 400;
-      color: #FFFFFF;
+      color: #ffffff;
       margin-top: 1em;
+      padding: 10;
+      white-space: pre-line;
     }
 
     body {
@@ -104,8 +106,10 @@
         return {
           startDate: new Date("2024-08-28T21:30:00Z"),
           timBirthday: new Date("2009-01-07T07:30:00Z"),
+          lindaBirthday: new Date("2007-06-27T09:00:00Z"),
+          dateWhen80: new Date("2089-01-07T07:30:00Z"),
           current: 0,
-          now: new Date(), // Store `now` in data and update it every second
+          now: new Date(),
           intervalId: null,
           images: [
             "./images/IMG-20241103-WA0001.jpg",
@@ -114,20 +118,28 @@
             "./images/Snapchat-673889231.jpg",
             "./images/Snapchat-933208961.jpg",
             "./images/PXL_20250125_095321814.MP.jpg",
-            "https://example.com/image7.jpg",
+            "./images/PXL_20241223_213638550.jpg",
+            "./images/Snapchat-718644104.jpg",
+            "./images/Snapchat-1847935618.jpg",
+            "./images/IMG-20250125-WA0001.jpg",
+            "./images/Snapchat-1868922940.jpg",
           ],
         };
       },
       computed: {
         times() {
           return [
-            { value: this.getMonthsDifference(this.startDate, this.now), message: `${this.getMonthsDifference(this.startDate, this.now)} months have passed since the 28th of August` },
-            { value: this.getDaysDifference(this.startDate, this.now), message: `That's ${this.getDaysDifference(this.startDate, this.now)} days since this very special moment!` },
-            { value: this.getDaysDifference(this.startDate, this.now), message: `Or ${this.getSecondsDifference(this.startDate, this.now)} seconds! That's a lot, huh?` },
+            { value: `${this.getMonthsDifference(this.startDate, this.now)} Months`, message: `${this.getMonthsDifference(this.startDate, this.now)} months have passed since the 28th of August` },
+            { value: `${this.getDaysDifference(this.startDate, this.now)} Days`, message: `Which is ${this.getDaysDifference(this.startDate, this.now)} days since this very special moment!` },
+            { value: `${this.getSecondsDifference(this.startDate, this.now)}`, message: `Or ${this.getSecondsDifference(this.startDate, this.now)} seconds!\nThat's a lot, huh?` },
             { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `These ${this.getDaysDifference(this.startDate, this.now)} days are ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life.` },
             { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life, that I have spent with YOU.` },
             { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `The best ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life!` },
-            { value: "Enjoy the moment", message: "This page is a reminder to live in the now!" },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.lindaBirthday, this.now) * 100).toFixed(1)}%`, message: `${this.getDaysDifference(this.startDate, this.now)} days is ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.lindaBirthday, this.now) * 100).toFixed(1)}% of your life btw.` },
+            { value: `${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}%`, message: `And I am certain that when I am 80 I will have spent ${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}% of my life with you.` },
+            { value: `Because you are the love of my life and that will never change!!`, message: `Pinky Promise!!`},
+            { value: `All of this leads up to one very special question!`, message: `` },
+            { value: `Will you be my valentine?`, message: `TODO: Buttons` },
           ];
         },
       },
@@ -180,7 +192,7 @@
       mounted() {
         let timeline = anime.timeline({
           autoplay: true,
-          duration: 5000,
+          duration: 10000,
           easing: "linear",
           loop: true
         });
@@ -207,7 +219,7 @@
             this.current--;
           }
           timeline.pause();
-          timeline.seek(this.current * 5000);
+          timeline.seek(this.current * 10000);
           timeline.play();
         });
   
