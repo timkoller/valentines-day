@@ -103,6 +103,7 @@
       data() {
         return {
           startDate: new Date("2024-08-28T21:30:00Z"),
+          timBirthday: new Date("2009-01-07T07:30:00Z"),
           current: 0,
           now: new Date(), // Store `now` in data and update it every second
           intervalId: null,
@@ -120,12 +121,12 @@
       computed: {
         times() {
           return [
-            { value: this.getMonthsDifference(this.startDate, this.now), message: `${this.getMonthsDifference(this.startDate, this.now)} Months have passed since the start` },
-            { value: this.getWeeksDifference(this.startDate, this.now), message: `${this.getWeeksDifference(this.startDate, this.now)} Weeks have gone by since the 28th of August` },
-            { value: this.getDaysDifference(this.startDate, this.now), message: `${this.getDaysDifference(this.startDate, this.now)} Days have passed since that moment` },
-            { value: this.getHoursDifference(this.startDate, this.now), message: `${this.getHoursDifference(this.startDate, this.now)} Hours have elapsed since the clock started ticking` },
-            { value: this.getMinutesDifference(this.startDate, this.now), message: `${this.getMinutesDifference(this.startDate, this.now)} Minutes have passed, and counting` },
-            { value: this.getSecondsDifference(this.startDate, this.now), message: `${this.getSecondsDifference(this.startDate, this.now)} Seconds have slipped away since then` },
+            { value: this.getMonthsDifference(this.startDate, this.now), message: `${this.getMonthsDifference(this.startDate, this.now)} months have passed since the 28th of August` },
+            { value: this.getDaysDifference(this.startDate, this.now), message: `That's ${this.getDaysDifference(this.startDate, this.now)} days since this very special moment!` },
+            { value: this.getDaysDifference(this.startDate, this.now), message: `Or ${this.getSecondsDifference(this.startDate, this.now)} seconds! That's a lot, huh?` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `These ${this.getDaysDifference(this.startDate, this.now)} days are ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life.` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life, that I have spent with YOU.` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `The best ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life!` },
             { value: "Enjoy the moment", message: "This page is a reminder to live in the now!" },
           ];
         },
