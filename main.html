@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vue & Time Units Animation</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -10,7 +10,7 @@
       height: 100%;
       width: 100%;
       margin: 0;
-      padding: 20;
+      padding: 0px;
       font-family: 'Poppins', sans-serif;
     }
 
@@ -56,19 +56,56 @@
       opacity: 0;
     }
 
-    .text-container .number {
+    .number {
       font-size: 4em;
       font-weight: 700;
       color: #FAF429;
     }
 
-    .text-container .message {
+    .message {
       font-size: 2em;
       font-weight: 400;
       color: #ffffff;
       margin-top: 1em;
-      padding: 10;
+      padding: 10px;
       white-space: pre-line;
+    }
+
+    /* Modern Button Styles */
+    .button-container {
+      margin-top: 20px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-yes {
+      background-color: #28a745; /* green */
+      color: #fff;
+    }
+
+    .btn-no {
+      background-color: #dc3545; /* red */
+      color: #fff;
+    }
+
+    .btn-try-again {
+      background-color: #007bff; /* blue */
+      color: #fff;
     }
 
     body {
@@ -86,15 +123,32 @@
 
     <section v-for="(time, index) in times" 
              :key="index" 
-             :style="{ backgroundImage: 'url(' + images[index] + ')' }" 
-             v-if="current == index">
+             :style="{ backgroundImage: 'url(' + getBackgroundImage(index) + ')' }" 
+             v-if="current === index">
       <div class="text-container" ref="textContainer">
-        <div class="number">{{ time.value }}</div>
-        <div class="message">{{ time.message }}</div>
+        <div class="number">
+          <!-- For the last page, show custom text based on response -->
+          {{ isLastPage ? (lastResponse === 'yes' ? 'YAYYYYYY' : (lastResponse === 'no' ? 'Wrong! Please try again' : time.value)) : time.value }}
+        </div>
+        <!-- For non-last pages, show the message text normally -->
+        <div v-if="!isLastPage" class="message">
+          {{ time.message }}
+        </div>
+        <!-- On the last page, display buttons based on lastResponse -->
+        <div v-else class="message">
+          <div v-if="lastResponse === 'default'" class="button-container">
+            <button class="button btn-yes" @click="handleYes">YES</button>
+            <button class="button btn-no" @click="handleNo">NO</button>
+          </div>
+          <div v-else-if="lastResponse === 'no'" class="button-container">
+            <button class="button btn-try-again" @click="handleTryAgain">Try Again</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
+  <!-- Vue, Anime.js and Hammer.js -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
   <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
@@ -111,6 +165,7 @@
           current: 0,
           now: new Date(),
           intervalId: null,
+          // Images for each page (last one is the original for the final page)
           images: [
             "./images/IMG-20241103-WA0001.jpg",
             "./images/IMG-20241112-WA0003.jpg",
@@ -124,6 +179,10 @@
             "./images/IMG-20250125-WA0001.jpg",
             "./images/Snapchat-1868922940.jpg",
           ],
+          // New background image for YES response on the last page
+          yesBackground: "./images/yes-background.jpg",
+          // State for the last page buttons; possible values: 'default', 'yes', 'no'
+          lastResponse: "default"
         };
       },
       computed: {
@@ -139,9 +198,13 @@
             { value: `${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}%`, message: `And I am certain that when I am 80 I will have spent ${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}% of my life with you.` },
             { value: `Because you are the love of my life and that will never change!!`, message: `Pinky Promise!!`},
             { value: `All of this leads up to one very special question!`, message: `` },
+            // Last page – its content will be replaced by our custom UI
             { value: `Will you be my valentine?`, message: `TODO: Buttons` },
           ];
         },
+        isLastPage() {
+          return this.current === this.times.length - 1;
+        }
       },
       methods: {
         getMonthsDifference(start, end) {
@@ -166,15 +229,23 @@
         getSecondsDifference(start, end) {
           return Math.floor((end - start) / 1000);
         },
+        // Returns the background image for a given slide;
+        // if it's the last slide and YES was pressed, use the new image.
+        getBackgroundImage(index) {
+          if (index === this.times.length - 1 && this.lastResponse === 'yes') {
+            return this.yesBackground;
+          }
+          return this.images[index];
+        },
         animateText() {
           const directions = [
-            { translateX: [-50, 0] }, // Left
-            { translateY: [50, 0] },  // Bottom
-            { translateY: [-50, 0] }, // Top
-            { translateX: [50, 0] },  // Right
+            { translateX: [-50, 0] }, // From left
+            { translateY: [50, 0] },  // From bottom
+            { translateY: [-50, 0] }, // From top
+            { translateX: [50, 0] }   // From right
           ];
           const animationProps = directions[this.current % directions.length];
-  
+
           anime({
             targets: this.$refs.textContainer,
             opacity: [0, 1],
@@ -183,20 +254,36 @@
             duration: 1000
           });
         },
+        handleYes() {
+          // When YES is pressed: update lastResponse and let computed
+          // text and background update accordingly.
+          this.lastResponse = 'yes';
+        },
+        handleNo() {
+          // When NO is pressed, update lastResponse so that the message text
+          // and button change.
+          this.lastResponse = 'no';
+        },
+        handleTryAgain() {
+          // Reset the last page back to the default state.
+          this.lastResponse = 'default';
+        }
       },
       watch: {
         current() {
+          // Every time current changes, animate text.
           this.$nextTick(this.animateText);
-        },
+        }
       },
       mounted() {
+        // Set up timeline without looping.
         let timeline = anime.timeline({
           autoplay: true,
           duration: 10000,
           easing: "linear",
-          loop: true
+          loop: false
         });
-  
+
         this.times.forEach((_, index) => {
           timeline.add({
             targets: document.querySelectorAll("nav > div")[index].children[0],
@@ -206,33 +293,46 @@
             }
           });
         });
-  
+
         let hammertime = new Hammer(document.querySelector("#app"));
-  
+
         hammertime.on("press", () => timeline.pause());
-        hammertime.on("pressup", () => timeline.play());
-  
-        hammertime.on("tap", (e) => {
-          if (e.center.x > window.innerWidth / 2 && this.current < this.times.length - 1) {
-            this.current++;
-          } else if (e.center.x <= window.innerWidth / 2 && this.current > 0) {
-            this.current--;
-          }
-          timeline.pause();
-          timeline.seek(this.current * 10000);
-          timeline.play();
+        hammertime.on("pressup", () => {
+          // Only resume timeline if not on the last page.
+          if (!this.isLastPage) timeline.play();
         });
-  
+
+        hammertime.on("tap", (e) => {
+          // Disable tap navigation entirely on the last page.
+          if (this.isLastPage) return;
+          
+          if (e.center.x > window.innerWidth / 2) {
+            if (this.current < this.times.length - 1) {
+              this.current++;
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          } else {
+            if (this.current > 0) {
+              this.current--;
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          }
+        });
+
         this.animateText();
-  
-        // Update `now` every second
+
+        // Update `now` every second to force times update.
         this.intervalId = setInterval(() => {
-          this.now = new Date(); // This will force `times` to update
+          this.now = new Date();
         }, 1000);
       },
       beforeDestroy() {
-        clearInterval(this.intervalId); // Clean up interval on component destroy
-      },
+        clearInterval(this.intervalId);
+      }
     });
   </script>
 </body>
