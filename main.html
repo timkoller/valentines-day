@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vue & Time Units Animation</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Adding Roboto for buttons -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
   <style>
     html, body, main, section {
       height: 100%;
@@ -78,15 +80,17 @@
 
     .button {
       display: inline-block;
-      padding: 12px 24px;
-      margin: 10px;
-      font-size: 1.2em;
+      padding: 15px 30px;
+      margin: 15px;
+      font-size: 0.8em;
       font-weight: bold;
       text-transform: uppercase;
-      border: none;
+      border: 2px solid;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      font-family: 'Roboto', sans-serif;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
     .button:hover {
@@ -96,16 +100,19 @@
     .btn-yes {
       background-color: #28a745; /* green */
       color: #fff;
+      border-color: #218838; /* slightly darker */
     }
 
     .btn-no {
       background-color: #dc3545; /* red */
       color: #fff;
+      border-color: #c82333; /* slightly darker */
     }
 
     .btn-try-again {
       background-color: #007bff; /* blue */
       color: #fff;
+      border-color: #0069d9; /* slightly darker */
     }
 
     body {
@@ -160,7 +167,7 @@
         return {
           startDate: new Date("2024-08-28T21:30:00Z"),
           timBirthday: new Date("2009-01-07T07:30:00Z"),
-          lindaBirthday: new Date("2007-06-27T09:00:00Z"),
+          lindaBirthday: new Date("2007-06-27T08:24:00Z"),
           dateWhen80: new Date("2089-01-07T07:30:00Z"),
           current: 0,
           now: new Date(),
@@ -172,15 +179,17 @@
             "./images/PXL_20250124_223628952.jpg",
             "./images/Snapchat-673889231.jpg",
             "./images/Snapchat-933208961.jpg",
-            "./images/PXL_20250125_095321814.MP.jpg",
+            "./images/IMG-20250206-WA0014.jpg",
             "./images/PXL_20241223_213638550.jpg",
             "./images/Snapchat-718644104.jpg",
             "./images/Snapchat-1847935618.jpg",
-            "./images/IMG-20250125-WA0001.jpg",
+            "./images/IMG-20241212-WA0012.jpg",
             "./images/Snapchat-1868922940.jpg",
           ],
           // New background image for YES response on the last page
-          yesBackground: "./images/yes-background.jpg",
+          yesBackground: "./images/IMG-20250209-WA0009.jpg",
+          // New background image for NO response on the last page
+          noBackground: "./images/IMG-20250211-WA0007.jpg",
           // State for the last page buttons; possible values: 'default', 'yes', 'no'
           lastResponse: "default"
         };
@@ -229,11 +238,15 @@
         getSecondsDifference(start, end) {
           return Math.floor((end - start) / 1000);
         },
-        // Returns the background image for a given slide;
-        // if it's the last slide and YES was pressed, use the new image.
+        // Returns the background image for a given slide.
+        // On the last slide, use a different background depending on YES/NO.
         getBackgroundImage(index) {
-          if (index === this.times.length - 1 && this.lastResponse === 'yes') {
-            return this.yesBackground;
+          if (index === this.times.length - 1) {
+            if (this.lastResponse === 'yes') {
+              return this.yesBackground;
+            } else if (this.lastResponse === 'no') {
+              return this.noBackground;
+            }
           }
           return this.images[index];
         },
@@ -255,13 +268,11 @@
           });
         },
         handleYes() {
-          // When YES is pressed: update lastResponse and let computed
-          // text and background update accordingly.
+          // When YES is pressed: update lastResponse so that text and background update.
           this.lastResponse = 'yes';
         },
         handleNo() {
-          // When NO is pressed, update lastResponse so that the message text
-          // and button change.
+          // When NO is pressed: update lastResponse so that text, button state, and background update.
           this.lastResponse = 'no';
         },
         handleTryAgain() {
