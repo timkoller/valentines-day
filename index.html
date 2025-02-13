@@ -1,11 +1,612 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linda Valentines day❤️</title>
+  <!-- Removed Poppins font; using system fonts now -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+  <style>
+    html, body, main, section {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    nav {
+      box-sizing: border-box;
+      display: grid;
+      grid-column-gap: 0.5em;
+      grid-template-columns: repeat(11, 1fr);
+      height: 0.1em;
+      padding: 0 0.5em;
+      position: fixed;
+      top: 0.5em;
+      width: 100%;
+    }
+
+    nav > div {
+      background: rgba(0,0,0,0.25);
+      height: 100%;
+    }
+
+    nav > div > div {
+      background: rgb(255, 255, 255);
+      height: 100%;
+      width: 0%;
+    }
+
+    section {
+      height: 100%;
+      width: 100%;
+      transition: background 1s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .text-container {
+      text-align: center;
+      line-height: 1.4;
+      color: white;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+      opacity: 0;
+    }
+
+    .number {
+      font-size: 4em;
+      font-weight: 700;
+      color: #fb6f92;
+      /* Font rendering fixes for Apple devices */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "tnum";
+    }
+
+    .message {
+      font-size: 2em;
+      font-weight: 400;
+      color: #ffffff;
+      margin-top: 1em;
+      padding: 10px;
+      white-space: pre-line;
+      /* Font rendering fixes for Apple devices */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "tnum";
+    }
+
+    /* Modern Button Styles */
+    .button-container {
+      margin-top: 20px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 60px;
+      margin: 10px;
+      font-size: 0.8em;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: 2px solid;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-yes {
+      background-color: #dd2d4a;
+      color: #fff;
+    }
+
+    .btn-no {
+      background-color: #f49cbb;
+      color: #fff;
+    }
+
+    .btn-try-again {
+      background-color: #dd2d4a;
+      color: #fff;
+    }
+
+    body {
+      background-color: #282c34;
+    }
+
+    /* Fireworks canvas overlay */
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      display: none;
+      background: transparent;
+    }
+  </style>
 </head>
 <body>
-    
+  <main id="app">
+    <nav>
+      <div v-for="(time, index) in times" :key="index">
+        <div></div>
+      </div>
+    </nav>
+
+    <section v-for="(time, index) in times" 
+             :key="index" 
+             :style="{ backgroundImage: 'url(' + getBackgroundImage(index) + ')' }" 
+             v-if="current === index">
+      <div class="text-container" ref="textContainer">
+        <div class="number">
+          <!-- For the last page, show custom text based on response -->
+          {{ isLastPage ? (lastResponse === 'yes' ? 'YAYYYYYY!! I love you soooo much!!' : (lastResponse === 'no' ? 'Wrong! Please try again' : time.value)) : time.value }}
+        </div>
+        <!-- For non-last pages, show the message text normally -->
+        <div v-if="!isLastPage" class="message">
+          {{ time.message }}
+        </div>
+        <!-- On the last page, display buttons based on lastResponse -->
+        <div v-else class="message">
+          <div v-if="lastResponse === 'default'" class="button-container">
+            <button class="button btn-yes" @click="handleYes">YES</button>
+            <button class="button btn-no" @click="handleNo">NO</button>
+          </div>
+          <div v-else-if="lastResponse === 'no'" class="button-container">
+            <button class="button btn-try-again" @click="handleTryAgain">Try Again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fireworks Canvas -->
+  <canvas id="fireworksCanvas"></canvas>
+
+  <!-- Vue, Anime.js and Hammer.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data() {
+        return {
+          startDate: new Date("2024-08-28T21:30:00Z"),
+          timBirthday: new Date("2009-01-07T07:30:00Z"),
+          lindaBirthday: new Date("2007-06-27T08:24:00Z"),
+          dateWhen80: new Date("2089-01-07T07:30:00Z"),
+          current: 0,
+          now: new Date(),
+          intervalId: null,
+          // Images for each page (last one is the original for the final page)
+          images: [
+            "./images/IMG-20241103-WA0001.jpg",
+            "./images/IMG-20241112-WA0003.jpg",
+            "./images/PXL_20250124_223628952.jpg",
+            "./images/Snapchat-673889231.jpg",
+            "./images/Snapchat-933208961.jpg",
+            "./images/IMG-20250206-WA0014.jpg",
+            "./images/PXL_20241223_213638550.jpg",
+            "./images/Snapchat-718644104.jpg",
+            "./images/Snapchat-1847935618.jpg",
+            "./images/IMG-20241212-WA0012.jpg",
+            "./images/Snapchat-1868922940.jpg",
+          ],
+          // New background image for YES response on the last page
+          yesBackground: "./images/IMG-20250209-WA0009.jpg",
+          // New background image for NO response on the last page
+          noBackground: "./images/IMG-20250211-WA0007.jpg",
+          // State for the last page buttons; possible values: 'default', 'yes', 'no'
+          lastResponse: "default"
+        };
+      },
+      computed: {
+        times() {
+          return [
+            { value: `${this.getMonthsDifference(this.startDate, this.now)} Months`, message: `${this.getMonthsDifference(this.startDate, this.now)} months have passed since the 28th of August` },
+            { value: `${this.getDaysDifference(this.startDate, this.now)} Days`, message: `That's ${this.getDaysDifference(this.startDate, this.now)} days since this very special moment!` },
+            { value: `${this.getSecondsDifference(this.startDate, this.now)}`, message: `Or ${this.getSecondsDifference(this.startDate, this.now)} seconds!\nThat's a lot, huh?` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `These ${this.getDaysDifference(this.startDate, this.now)} days are ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life.` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life, that I\nhave spent with YOU.` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}%`, message: `The best ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.timBirthday, this.now) * 100).toFixed(1)}% of my life!` },
+            { value: `${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.lindaBirthday, this.now) * 100).toFixed(1)}%`, message: `${this.getDaysDifference(this.startDate, this.now)} days is ${(this.getDaysDifference(this.startDate, this.now) / this.getDaysDifference(this.lindaBirthday, this.now) * 100).toFixed(1)}% of your life btw.` },
+            { value: `${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}%`, message: `And I am certain that when I am 80 I will have spent ${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}% of my life with you.` },
+            { value: `Because you are the love of my life and that will never change!!`, message: `Pinky Promise!!`},
+            { value: `All of this leads up to one very special question!`, message: `` },
+            { value: `Will you be my valentine?🌷`, message: `` },
+          ];
+        },
+        isLastPage() {
+          return this.current === this.times.length - 1;
+        }
+      },
+      methods: {
+        getMonthsDifference(start, end) {
+          const years = end.getFullYear() - start.getFullYear();
+          const months = end.getMonth() - start.getMonth();
+          let totalMonths = years * 12 + months;
+          if (end.getDate() < start.getDate()) totalMonths--;
+          return totalMonths;
+        },
+        getWeeksDifference(start, end) {
+          return Math.floor((end - start) / (1000 * 3600 * 24 * 7));
+        },
+        getDaysDifference(start, end) {
+          return Math.floor((end - start) / (1000 * 3600 * 24));
+        },
+        getHoursDifference(start, end) {
+          return Math.floor((end - start) / (1000 * 3600));
+        },
+        getMinutesDifference(start, end) {
+          return Math.floor((end - start) / (1000 * 60));
+        },
+        getSecondsDifference(start, end) {
+          return Math.floor((end - start) / 1000);
+        },
+        // Returns the background image for a given slide.
+        // On the last slide, use a different background depending on YES/NO.
+        getBackgroundImage(index) {
+          if (index === this.times.length - 1) {
+            if (this.lastResponse === 'yes') {
+              return this.yesBackground;
+            } else if (this.lastResponse === 'no') {
+              return this.noBackground;
+            }
+          }
+          return this.images[index];
+        },
+        animateText() {
+          const directions = [
+            { translateX: [-50, 0] }, // From left
+            { translateY: [50, 0] },  // From bottom
+            { translateY: [-50, 0] }, // From top
+            { translateX: [50, 0] }   // From right
+          ];
+          const animationProps = directions[this.current % directions.length];
+
+          anime({
+            targets: this.$refs.textContainer,
+            opacity: [0, 1],
+            ...animationProps,
+            easing: "easeOutExpo",
+            duration: 1000
+          });
+        },
+        handleYes() {
+          // When YES is pressed: update lastResponse so that text and background update,
+          // then start the fireworks effect.
+          this.lastResponse = 'yes';
+          startFireworksEffect(); // call the global fireworks function
+        },
+        handleNo() {
+          this.lastResponse = 'no';
+        },
+        handleTryAgain() {
+          this.lastResponse = 'default';
+        }
+      },
+      watch: {
+        current() {
+          this.$nextTick(this.animateText);
+        }
+      },
+      mounted() {
+        let timeline = anime.timeline({
+          autoplay: true,
+          duration: 10000,
+          easing: "linear",
+          loop: false
+        });
+
+        this.times.forEach((_, index) => {
+          timeline.add({
+            targets: document.querySelectorAll("nav > div")[index].children[0],
+            width: "100%",
+            changeBegin: () => {
+              this.current = index;
+            }
+          });
+        });
+
+        let hammertime = new Hammer(document.querySelector("#app"));
+
+        hammertime.on("press", () => timeline.pause());
+        hammertime.on("pressup", () => {
+          if (!this.isLastPage) timeline.play();
+        });
+
+        hammertime.on("tap", (e) => {
+          if (this.isLastPage) return;
+          
+          if (e.center.x > window.innerWidth / 2) {
+            if (this.current < this.times.length - 1) {
+              this.current++;
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          } else {
+            if (this.current > 0) {
+              this.current--;
+              timeline.pause();
+              timeline.seek(this.current * 10000);
+              timeline.play();
+            }
+          }
+        });
+
+        this.animateText();
+
+        this.intervalId = setInterval(() => {
+          this.now = new Date();
+        }, 1000);
+      },
+      beforeDestroy() {
+        clearInterval(this.intervalId);
+      }
+    });
+  </script>
+
+  <!-- Fireworks Effect Script -->
+  <script>
+    // Get and set up the fireworks canvas
+    const fwCanvas = document.getElementById("fireworksCanvas");
+    const fwCtx = fwCanvas.getContext("2d");
+
+    function resizeCanvas() {
+      fwCanvas.width = window.innerWidth;
+      fwCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // Arrays for rockets and explosion particles
+    let rockets = [];
+    let particles = [];
+
+    // Constants for physics and sizes
+    const gravity = 0.05;
+    const friction = 0.98;
+    const engineAcceleration = -0.01;
+    const rocketRadius = 1.5;
+    const particleRadius = 1;
+
+    // Rocket class
+    class Rocket {
+      constructor(x, y, vx, vy, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.exploded = false;
+        this.trail = [];
+        this.maxTrail = 60;
+        // Random timer (in frames) before explosion
+        this.timer = 25 + Math.random() * 130;
+      }
+
+      update() {
+        this.vy += engineAcceleration;
+        
+        // Use the last trail point if available or the current position as the starting point
+        let lastPoint = this.trail.length ? this.trail[this.trail.length - 1] : { x: this.x, y: this.y };
+
+        // Update position
+        this.x += this.vx;
+        this.y += this.vy;
+        this.timer--;
+
+        // Calculate the movement delta
+        const dx = this.x - lastPoint.x;
+        const dy = this.y - lastPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const spacing = 2; // desired spacing in pixels
+        const numIntermediate = Math.max(1, Math.floor(distance / spacing));
+
+        // Add intermediate points for a denser trail
+        for (let i = 1; i <= numIntermediate; i++) {
+          const t = i / numIntermediate;
+          const interpolatedX = lastPoint.x + dx * t;
+          const interpolatedY = lastPoint.y + dy * t;
+          this.trail.push({ x: interpolatedX, y: interpolatedY });
+        }
+
+        // Trim the trail to maintain a fixed maximum length
+        while (this.trail.length > this.maxTrail) {
+          this.trail.shift();
+        }
+
+        if (this.timer <= 0 && !this.exploded) {
+          this.explode();
+          this.exploded = true;
+        }
+      }
+
+      draw() {
+        fwCtx.save();
+        // Draw trail
+        for (let i = 0; i < this.trail.length; i++) {
+          const pos = this.trail[i];
+          const alpha = (i + 1) / this.trail.length;
+          fwCtx.globalAlpha = alpha;
+          fwCtx.beginPath();
+          fwCtx.arc(pos.x, pos.y, rocketRadius, 0, Math.PI * 2);
+          fwCtx.fillStyle = this.color;
+          fwCtx.fill();
+        }
+        // Draw rocket
+        fwCtx.globalAlpha = 1;
+        fwCtx.beginPath();
+        fwCtx.arc(this.x, this.y, rocketRadius, 0, Math.PI * 2);
+        fwCtx.fillStyle = this.color;
+        fwCtx.fill();
+        fwCtx.restore();
+      }
+
+      explode() {
+        const particleCount = 30 + Math.floor(Math.random() * 20);
+        for (let i = 0; i < particleCount; i++) {
+          const baseAngle = (2 * Math.PI * i) / particleCount;
+          const angle = baseAngle + (Math.random() - 0.5) * (Math.PI / 10);
+          const speed = Math.random() * 1 + 1;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed;
+          particles.push(new Particle(this.x, this.y, vx, vy, this.color));
+        }
+      }
+    }
+
+    // Particle class
+    class Particle {
+      constructor(x, y, vx, vy, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.alpha = 1;
+        this.life = 60 + Math.random() * 20;
+        this.trail = [];
+        this.maxTrail = 10;
+      }
+
+      update() {
+        this.vy += gravity;
+        let lastPoint = this.trail.length ? this.trail[this.trail.length - 1] : { x: this.x, y: this.y };
+
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= friction;
+        this.vy *= friction;
+        this.life--;
+        this.alpha = this.life / 80;
+
+        const dx = this.x - lastPoint.x;
+        const dy = this.y - lastPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const spacing = 2; // desired spacing in pixels
+        const numIntermediate = Math.max(1, Math.floor(distance / spacing));
+
+        // Add intermediate points for a denser trail
+        for (let i = 1; i <= numIntermediate; i++) {
+          const t = i / numIntermediate;
+          const interpolatedX = lastPoint.x + dx * t;
+          const interpolatedY = lastPoint.y + dy * t;
+          this.trail.push({ x: interpolatedX, y: interpolatedY });
+        }
+
+        // Trim the trail to the maximum length
+        while (this.trail.length > this.maxTrail) {
+          this.trail.shift();
+        }
+      }
+
+      draw() {
+        fwCtx.save();
+        for (let i = 0; i < this.trail.length; i++) {
+          const pos = this.trail[i];
+          const trailAlpha = ((i + 1) / this.trail.length) * this.alpha;
+          fwCtx.globalAlpha = trailAlpha;
+          fwCtx.beginPath();
+          fwCtx.arc(pos.x, pos.y, particleRadius, 0, Math.PI * 2);
+          fwCtx.fillStyle = this.color;
+          fwCtx.fill();
+        }
+        fwCtx.globalAlpha = this.alpha;
+        fwCtx.beginPath();
+        fwCtx.arc(this.x, this.y, particleRadius, 0, Math.PI * 2);
+        fwCtx.fillStyle = this.color;
+        fwCtx.fill();
+        fwCtx.restore();
+      }
+    }
+
+    // Generate a random bright color (using HSL)
+    function randomColor() {
+      const hue = Math.floor(Math.random() * 80 + 280);
+      return `hsl(${hue}, 100%, 70%)`;
+    }
+
+    // Launch a new rocket from a random x-position at the bottom
+    function launchRocket() {
+      const x = Math.random() * fwCanvas.width;
+      const y = fwCanvas.height;
+      const angle = (Math.random() * 10 - 5) * (Math.PI / 180);
+      const speed = Math.random() * 3 + 4;
+      const vx = Math.sin(angle) * speed;
+      const vy = -Math.cos(angle) * speed;
+      rockets.push(new Rocket(x, y, vx, vy, randomColor()));
+    }
+
+    // Animation loop for the fireworks
+    let fireworksAnimationId;
+    function animateFireworks() {
+      fireworksAnimationId = requestAnimationFrame(animateFireworks);
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const rocket = rockets[i];
+        rocket.update();
+        rocket.draw();
+        if (rocket.exploded) {
+          rockets.splice(i, 1);
+        }
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        particle.update();
+        particle.draw();
+        if (particle.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    // Variables to hold interval IDs for rocket launching
+    let multiplierInterval, normalInterval;
+
+    // Start the fireworks effect.
+    // For the first few seconds, launch rockets rapidly and then at a normal rate.
+    function startFireworksEffect() {
+      // Show the canvas
+      fwCanvas.style.display = "block";
+      // Start the animation loop
+      animateFireworks();
+      // Start rapid rocket launches
+      multiplierInterval = setInterval(launchRocket, 50);
+      setTimeout(() => {
+        clearInterval(multiplierInterval);
+        normalInterval = setInterval(launchRocket, 100);
+      }, 5000);
+      // Optionally, you can stop the effect after a set duration by calling stopFireworksEffect()
+      //setTimeout(stopFireworksEffect, 8000);
+    }
+
+    function stopFireworksEffect() {
+      clearInterval(multiplierInterval);
+      clearInterval(normalInterval);
+      cancelAnimationFrame(fireworksAnimationId);
+      rockets = [];
+      particles = [];
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+      fwCanvas.style.display = "none";
+    }
+  </script>
 </body>
 </html>
