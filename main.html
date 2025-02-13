@@ -58,13 +58,16 @@
     }
 
     .number {
+      display: inline-block; /* Isolates the element */
       font-size: 4em;
       font-weight: 700;
       color: #fb6f92;
-      /* Font rendering fixes for Apple devices */
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
-      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums; /* Use modern fixed-width digits */
+      transform: translateZ(0); /* Force hardware acceleration */
+      text-decoration: none; /* Remove any accidental underline */
+      -webkit-user-select: none;
     }
 
     .message {
@@ -74,7 +77,6 @@
       margin-top: 1em;
       padding: 10px;
       white-space: pre-line;
-      /* Font rendering fixes for Apple devices */
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
       font-feature-settings: "tnum";
