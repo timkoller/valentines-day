@@ -58,16 +58,13 @@
     }
 
     .number {
-      display: inline-block; /* Isolates the element */
       font-size: 4em;
       font-weight: 700;
       color: #fb6f92;
+      /* Font rendering fixes for Apple devices */
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
-      font-variant-numeric: tabular-nums; /* Use modern fixed-width digits */
-      transform: translateZ(0); /* Force hardware acceleration */
-      text-decoration: none; /* Remove any accidental underline */
-      -webkit-user-select: none;
+      font-feature-settings: "tnum";
     }
 
     .message {
@@ -77,6 +74,7 @@
       margin-top: 1em;
       padding: 10px;
       white-space: pre-line;
+      /* Font rendering fixes for Apple devices */
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
       font-feature-settings: "tnum";
@@ -107,12 +105,12 @@
     }
 
     .btn-yes {
-      background-color: #f49cbb;
+      background-color: #dd2d4a;
       color: #fff;
     }
 
     .btn-no {
-      background-color: #dd2d4a;
+      background-color: #f49cbb;
       color: #fff;
     }
 
@@ -154,7 +152,7 @@
       <div class="text-container" ref="textContainer">
         <div class="number">
           <!-- For the last page, show custom text based on response -->
-          {{ isLastPage ? (lastResponse === 'yes' ? 'YAYYYYYY' : (lastResponse === 'no' ? 'Wrong! Please try again' : time.value)) : time.value }}
+          {{ isLastPage ? (lastResponse === 'yes' ? 'YAYYYYYY!! I love you soooo much!!' : (lastResponse === 'no' ? 'Wrong! Please try again' : time.value)) : time.value }}
         </div>
         <!-- For non-last pages, show the message text normally -->
         <div v-if="!isLastPage" class="message">
@@ -229,7 +227,6 @@
             { value: `${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}%`, message: `And I am certain that when I am 80 I will have spent ${(this.getDaysDifference(this.startDate, this.dateWhen80) / this.getDaysDifference(this.timBirthday, this.dateWhen80) * 100).toFixed(1)}% of my life with you.` },
             { value: `Because you are the love of my life and that will never change!!`, message: `Pinky Promise!!`},
             { value: `All of this leads up to one very special question!`, message: `` },
-            // Last page – its content will be replaced by our custom UI
             { value: `Will you be my valentine?🌷`, message: `` },
           ];
         },
@@ -386,7 +383,7 @@
     const friction = 0.98;
     const engineAcceleration = -0.01;
     const rocketRadius = 3;
-    const particleRadius = 3;
+    const particleRadius = 2;
 
     // Rocket class
     class Rocket {
@@ -398,7 +395,7 @@
         this.color = color;
         this.exploded = false;
         this.trail = [];
-        this.maxTrail = 10;
+        this.maxTrail = 15;
         // Random timer (in frames) before explosion
         this.timer = 50 + Math.random() * 100;
       }
@@ -505,7 +502,7 @@
 
     // Generate a random bright color (using HSL)
     function randomColor() {
-      const hue = Math.floor(Math.random() * 360);
+      const hue = Math.floor(Math.random() * 80 + 280);
       return `hsl(${hue}, 100%, 70%)`;
     }
 
@@ -558,13 +555,13 @@
       // Start the animation loop
       animateFireworks();
       // Start multiplier interval (rocket launches at 50ms)
-      multiplierInterval = setInterval(launchRocket, 50);
+      multiplierInterval = setInterval(launchRocket, 25);
       setTimeout(() => {
         clearInterval(multiplierInterval);
-        normalInterval = setInterval(launchRocket, 200);
-      }, 3000);
+        normalInterval = setInterval(launchRocket, 100);
+      }, 5000);
       // Stop fireworks after 8000ms
-      setTimeout(stopFireworksEffect, 8000);
+      //setTimeout(stopFireworksEffect, 8000);
     }
 
     function stopFireworksEffect() {
