@@ -97,25 +97,34 @@
     }
 
     .btn-yes {
-      background-color: #f49cbb; /* green */
+      background-color: #dd2d4a;
       color: #fff;
-      /*border-color: #ff8fa3;*/
     }
 
     .btn-no {
-      background-color: #dd2d4a; /* red */
+      background-color: #f49cbb;
       color: #fff;
-      /*border-color: #c9184a;*/
     }
 
     .btn-try-again {
-      background-color: #dd2d4a; /* blue */
+      background-color: #dd2d4a;
       color: #fff;
-      /*border-color: #0069d9;*/
     }
 
     body {
       background-color: #282c34;
+    }
+
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      display: none;
+      background: transparent;
     }
   </style>
 </head>
@@ -153,6 +162,9 @@
       </div>
     </section>
   </main>
+
+  <!-- Fireworks Canvas -->
+  <canvas id="fireworksCanvas"></canvas>
 
   <!-- Vue, Anime.js and Hammer.js -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
@@ -267,26 +279,24 @@
           });
         },
         handleYes() {
-          // When YES is pressed: update lastResponse so that text and background update.
+          // When YES is pressed: update lastResponse so that text and background update,
+          // then start the fireworks effect.
           this.lastResponse = 'yes';
+          startFireworksEffect(); // call the global fireworks function
         },
         handleNo() {
-          // When NO is pressed: update lastResponse so that text, button state, and background update.
           this.lastResponse = 'no';
         },
         handleTryAgain() {
-          // Reset the last page back to the default state.
           this.lastResponse = 'default';
         }
       },
       watch: {
         current() {
-          // Every time current changes, animate text.
           this.$nextTick(this.animateText);
         }
       },
       mounted() {
-        // Set up timeline without looping.
         let timeline = anime.timeline({
           autoplay: true,
           duration: 10000,
@@ -308,12 +318,10 @@
 
         hammertime.on("press", () => timeline.pause());
         hammertime.on("pressup", () => {
-          // Only resume timeline if not on the last page.
           if (!this.isLastPage) timeline.play();
         });
 
         hammertime.on("tap", (e) => {
-          // Disable tap navigation entirely on the last page.
           if (this.isLastPage) return;
           
           if (e.center.x > window.innerWidth / 2) {
@@ -335,7 +343,6 @@
 
         this.animateText();
 
-        // Update `now` every second to force times update.
         this.intervalId = setInterval(() => {
           this.now = new Date();
         }, 1000);
@@ -344,6 +351,221 @@
         clearInterval(this.intervalId);
       }
     });
+  </script>
+
+  <!-- Fireworks Effect Script -->
+  <script>
+    // Get and set up the fireworks canvas
+    const fwCanvas = document.getElementById("fireworksCanvas");
+    const fwCtx = fwCanvas.getContext("2d");
+
+    function resizeCanvas() {
+      fwCanvas.width = window.innerWidth;
+      fwCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // Arrays for rockets and explosion particles
+    let rockets = [];
+    let particles = [];
+
+    // Constants for physics and sizes
+    const gravity = 0.05;
+    const friction = 0.98;
+    const engineAcceleration = -0.01;
+    const rocketRadius = 3;
+    const particleRadius = 3;
+
+    // Rocket class
+    class Rocket {
+      constructor(x, y, vx, vy, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.exploded = false;
+        this.trail = [];
+        this.maxTrail = 10;
+        // Random timer (in frames) before explosion
+        this.timer = 50 + Math.random() * 100;
+      }
+
+      update() {
+        this.vy += engineAcceleration;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.timer--;
+
+        this.trail.push({ x: this.x, y: this.y });
+        if (this.trail.length > this.maxTrail) {
+          this.trail.shift();
+        }
+
+        if (this.timer <= 0 && !this.exploded) {
+          this.explode();
+          this.exploded = true;
+        }
+      }
+
+      draw() {
+        fwCtx.save();
+        // Draw trail
+        for (let i = 0; i < this.trail.length; i++) {
+          const pos = this.trail[i];
+          const alpha = (i + 1) / this.trail.length;
+          fwCtx.globalAlpha = alpha;
+          fwCtx.beginPath();
+          fwCtx.arc(pos.x, pos.y, rocketRadius, 0, Math.PI * 2);
+          fwCtx.fillStyle = this.color;
+          fwCtx.fill();
+        }
+        // Draw rocket
+        fwCtx.globalAlpha = 1;
+        fwCtx.beginPath();
+        fwCtx.arc(this.x, this.y, rocketRadius, 0, Math.PI * 2);
+        fwCtx.fillStyle = this.color;
+        fwCtx.fill();
+        fwCtx.restore();
+      }
+
+      explode() {
+        const particleCount = 30 + Math.floor(Math.random() * 20);
+        for (let i = 0; i < particleCount; i++) {
+          const baseAngle = (2 * Math.PI * i) / particleCount;
+          const angle = baseAngle + (Math.random() - 0.5) * (Math.PI / 10);
+          const speed = Math.random() * 1.5 + 2;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed;
+          particles.push(new Particle(this.x, this.y, vx, vy, this.color));
+        }
+      }
+    }
+
+    // Particle class
+    class Particle {
+      constructor(x, y, vx, vy, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.alpha = 1;
+        this.life = 60 + Math.random() * 20;
+        this.trail = [];
+        this.maxTrail = 10;
+      }
+
+      update() {
+        this.vy += gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= friction;
+        this.vy *= friction;
+        this.life--;
+        this.alpha = this.life / 80;
+
+        this.trail.push({ x: this.x, y: this.y });
+        if (this.trail.length > this.maxTrail) {
+          this.trail.shift();
+        }
+      }
+
+      draw() {
+        fwCtx.save();
+        for (let i = 0; i < this.trail.length; i++) {
+          const pos = this.trail[i];
+          const trailAlpha = ((i + 1) / this.trail.length) * this.alpha;
+          fwCtx.globalAlpha = trailAlpha;
+          fwCtx.beginPath();
+          fwCtx.arc(pos.x, pos.y, particleRadius, 0, Math.PI * 2);
+          fwCtx.fillStyle = this.color;
+          fwCtx.fill();
+        }
+        fwCtx.globalAlpha = this.alpha;
+        fwCtx.beginPath();
+        fwCtx.arc(this.x, this.y, particleRadius, 0, Math.PI * 2);
+        fwCtx.fillStyle = this.color;
+        fwCtx.fill();
+        fwCtx.restore();
+      }
+    }
+
+    // Generate a random bright color (using HSL)
+    function randomColor() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsl(${hue}, 100%, 70%)`;
+    }
+
+    // Launch a new rocket from a random x-position at the bottom
+    function launchRocket() {
+      const x = Math.random() * fwCanvas.width;
+      const y = fwCanvas.height;
+      const angle = (Math.random() * 10 - 5) * (Math.PI / 180);
+      const speed = Math.random() * 3 + 7;
+      const vx = Math.sin(angle) * speed;
+      const vy = -Math.cos(angle) * speed;
+      rockets.push(new Rocket(x, y, vx, vy, randomColor()));
+    }
+
+    // Animation loop for the fireworks
+    let fireworksAnimationId;
+    function animateFireworks() {
+      fireworksAnimationId = requestAnimationFrame(animateFireworks);
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const rocket = rockets[i];
+        rocket.update();
+        rocket.draw();
+        if (rocket.exploded) {
+          rockets.splice(i, 1);
+        }
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        particle.update();
+        particle.draw();
+        if (particle.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    // Variables to hold interval IDs for rocket launching
+    let multiplierInterval, normalInterval;
+
+    // Start the fireworks effect.
+    // For the first 3000ms, launch rockets every 50ms (4× the normal rate).
+    // Then switch to a normal launch rate (every 200ms).
+    // Stop the entire effect after 8000ms.
+    function startFireworksEffect() {
+      // Show the canvas
+      fwCanvas.style.display = "block";
+      // Start the animation loop
+      animateFireworks();
+      // Start multiplier interval (rocket launches at 50ms)
+      multiplierInterval = setInterval(launchRocket, 25);
+      setTimeout(() => {
+        clearInterval(multiplierInterval);
+        normalInterval = setInterval(launchRocket, 100);
+      }, 3000);
+      // Stop fireworks after 8000ms
+      //setTimeout(stopFireworksEffect, 8000);
+    }
+
+    function stopFireworksEffect() {
+      clearInterval(multiplierInterval);
+      clearInterval(normalInterval);
+      cancelAnimationFrame(fireworksAnimationId);
+      // Optionally clear arrays so that old rockets/particles don’t linger
+      rockets = [];
+      particles = [];
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+      fwCanvas.style.display = "none";
+    }
   </script>
 </body>
 </html>
