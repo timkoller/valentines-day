@@ -1,101 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scrolling Text</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fireworks Animation</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #333;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            text-align: left;
-        }
-        .container {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            font-size: 1.2rem;
-            font-weight: bold;
-            line-height: 1.8rem;
-            color: white;
-            max-width: 90%;
-            flex-wrap: nowrap;
-        }
-        .changing-text-wrapper {
-            height: 1.8rem;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            margin-right: 10px;
-        }
-        .changing-text {
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-        .changing-text div {
-            padding: 0;
-            height: 1.8rem;
-            display: flex;
-            align-items: center;
-            opacity: 0.4;
-            transition: opacity 0.3s;
-            color: rgb(255, 204, 0);
-            white-space: nowrap;
-        }
-        .changing-text div.active {
-            opacity: 1;
-        }
-        .fixed-text {
-            text-align: left;
-            max-width: 100%;
-            word-wrap: break-word;
-        }
-        @media (max-width: 600px) {
-            .container {
-                font-size: 1rem;
-                line-height: 1.5rem;
-                flex-wrap: nowrap;
-                display: flex;
-                align-items: flex-start;
-            }
-        }
+      /* Remove default spacing and hide scrollbars */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #1e1e1e; /* very dark gray background */
+      }
+      canvas {
+        display: block;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="changing-text-wrapper">
-            <div class="changing-text">
-                <div class="active">34 weeks</div>
-                <div>3758 hours</div>
-                <div>236,473 minutes</div>
-                <div>13,592,384 seconds</div>
-            </div>
-        </div>
-        <span class="fixed-text">have passed since this very special moment</span>
-    </div>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const changingText = document.querySelector(".changing-text");
-            const items = document.querySelectorAll(".changing-text div");
-            let index = 0;
+      // Setup the canvas to cover the full window.
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
 
-            function updateText() {
-                items.forEach(item => item.classList.remove("active"));
-                items[index].classList.add("active");
-                changingText.style.transform = `translateY(-${index * 1.8}rem)`;
-                index = (index + 1) % items.length;
-            }
-            
-            updateText(); // Ensure immediate update on load
-            setInterval(updateText, 2000);
-        });
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      // Arrays to hold rockets and explosion particles.
+      const rockets = [];
+      const particles = [];
+
+      // Constants:
+      const gravity = 0.05; // for explosion particles
+      const friction = 0.98;
+      // Rocket engine gives a slight upward acceleration.
+      const engineAcceleration = -0.01;
+
+      // Rocket class – launches upward, leaves a trail, and explodes when reaching its set height.
+      class Rocket {
+        constructor(x, y, vx, vy, color) {
+          this.x = x;
+          this.y = y;
+          this.vx = vx;
+          this.vy = vy;
+          this.color = color;
+          this.exploded = false;
+          // Record positions to draw a trail.
+          this.trail = [];
+          this.maxTrail = 10;
+          // Set a random explosion height.
+          // This value is centered around canvas.height/3 (i.e. about 2/3 from the bottom)
+          // and varies by ±canvas.height/6.
+          this.explosionHeight =
+            canvas.height / 2 + (Math.random() - 0.5) * (canvas.height - 50);
+        }
+
+        update() {
+          // Apply a slight upward acceleration.
+          this.vy += engineAcceleration;
+          this.x += this.vx;
+          this.y += this.vy;
+
+          // Record the trail.
+          this.trail.push({ x: this.x, y: this.y });
+          if (this.trail.length > this.maxTrail) {
+            this.trail.shift();
+          }
+
+          // Explode when the rocket reaches its designated explosion height.
+          if (this.y < this.explosionHeight && !this.exploded) {
+            this.explode();
+            this.exploded = true;
+          }
+        }
+
+        draw() {
+          ctx.save();
+          // Draw the trail with fading opacity.
+          for (let i = 0; i < this.trail.length; i++) {
+            const pos = this.trail[i];
+            const alpha = (i + 1) / this.trail.length;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+          }
+          // Draw the current rocket.
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        explode() {
+          // Generate explosion particles in a nearly uniform circle.
+          const particleCount = 30 + Math.floor(Math.random() * 20);
+          for (let i = 0; i < particleCount; i++) {
+            // Evenly distribute the base angle around the circle with a slight random offset.
+            const baseAngle = (2 * Math.PI * i) / particleCount;
+            const angle = baseAngle + (Math.random() - 0.5) * (Math.PI / 10);
+            const speed = Math.random() * 1.5 + 2;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+            // All explosion particles share the rocket's color.
+            particles.push(new Particle(this.x, this.y, vx, vy, this.color));
+          }
+        }
+      }
+
+      // Particle class – represents explosion particles affected by gravity, with their own trails.
+      class Particle {
+        constructor(x, y, vx, vy, color) {
+          this.x = x;
+          this.y = y;
+          this.vx = vx;
+          this.vy = vy;
+          this.color = color;
+          this.alpha = 1;
+          this.life = 60 + Math.random() * 20; // lifespan in frames
+          // Record previous positions to draw a longer trail.
+          this.trail = [];
+          this.maxTrail = 10;
+        }
+
+        update() {
+          this.vy += gravity;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.vx *= friction;
+          this.vy *= friction;
+          this.life--;
+          this.alpha = this.life / 80;
+
+          // Record the trail.
+          this.trail.push({ x: this.x, y: this.y });
+          if (this.trail.length > this.maxTrail) {
+            this.trail.shift();
+          }
+        }
+
+        draw() {
+          ctx.save();
+          // Draw the trail as a series of fading circles.
+          for (let i = 0; i < this.trail.length; i++) {
+            const pos = this.trail[i];
+            const trailAlpha = ((i + 1) / this.trail.length) * this.alpha;
+            ctx.globalAlpha = trailAlpha;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+          }
+          // Draw the current particle.
+          ctx.globalAlpha = this.alpha;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      // Generate a bright, light color using HSL.
+      function randomColor() {
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 100%, 70%)`;
+      }
+
+      // Launch a new rocket from a random x-coordinate at the bottom.
+      function launchRocket() {
+        const x = Math.random() * canvas.width;
+        const y = canvas.height;
+        // Angle between -5° and 5° (converted to radians).
+        const angle = (Math.random() * 10 - 5) * (Math.PI / 180);
+        const speed = Math.random() * 3 + 7;
+        const vx = Math.sin(angle) * speed;
+        const vy = -Math.cos(angle) * speed;
+        rockets.push(new Rocket(x, y, vx, vy, randomColor()));
+      }
+
+      // Main animation loop.
+      function animate() {
+        requestAnimationFrame(animate);
+        // Clear the entire canvas each frame.
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update and draw rockets.
+        for (let i = rockets.length - 1; i >= 0; i--) {
+          const rocket = rockets[i];
+          rocket.update();
+          rocket.draw();
+          if (rocket.exploded) {
+            rockets.splice(i, 1);
+          }
+        }
+
+        // Update and draw explosion particles.
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const particle = particles[i];
+          particle.update();
+          particle.draw();
+          if (particle.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+      }
+
+      // Start the animation.
+      animate();
+
+      // Launch a new rocket every 200 milliseconds (about 5 per second).
+      setInterval(launchRocket, 200);
     </script>
-</body>
+  </body>
 </html>
