@@ -382,7 +382,7 @@
     const gravity = 0.05;
     const friction = 0.98;
     const engineAcceleration = -0.01;
-    const rocketRadius = 2;
+    const rocketRadius = 1.5;
     const particleRadius = 1;
 
     // Rocket class
@@ -395,19 +395,39 @@
         this.color = color;
         this.exploded = false;
         this.trail = [];
-        this.maxTrail = 15;
+        this.maxTrail = 60;
         // Random timer (in frames) before explosion
-        this.timer = 50 + Math.random() * 100;
+        this.timer = 50 + Math.random() * 130;
       }
 
       update() {
         this.vy += engineAcceleration;
+        
+        // Use the last trail point if available or the current position as the starting point
+        let lastPoint = this.trail.length ? this.trail[this.trail.length - 1] : { x: this.x, y: this.y };
+
+        // Update position
         this.x += this.vx;
         this.y += this.vy;
         this.timer--;
 
-        this.trail.push({ x: this.x, y: this.y });
-        if (this.trail.length > this.maxTrail) {
+        // Calculate the movement delta
+        const dx = this.x - lastPoint.x;
+        const dy = this.y - lastPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const spacing = 2; // desired spacing in pixels
+        const numIntermediate = Math.max(1, Math.floor(distance / spacing));
+
+        // Add intermediate points for a denser trail
+        for (let i = 1; i <= numIntermediate; i++) {
+          const t = i / numIntermediate;
+          const interpolatedX = lastPoint.x + dx * t;
+          const interpolatedY = lastPoint.y + dy * t;
+          this.trail.push({ x: interpolatedX, y: interpolatedY });
+        }
+
+        // Trim the trail to maintain a fixed maximum length
+        while (this.trail.length > this.maxTrail) {
           this.trail.shift();
         }
 
@@ -443,7 +463,7 @@
         for (let i = 0; i < particleCount; i++) {
           const baseAngle = (2 * Math.PI * i) / particleCount;
           const angle = baseAngle + (Math.random() - 0.5) * (Math.PI / 10);
-          const speed = Math.random() * 1.5 + 2;
+          const speed = Math.random() * 1 + 1;
           const vx = Math.cos(angle) * speed;
           const vy = Math.sin(angle) * speed;
           particles.push(new Particle(this.x, this.y, vx, vy, this.color));
@@ -467,6 +487,8 @@
 
       update() {
         this.vy += gravity;
+        let lastPoint = this.trail.length ? this.trail[this.trail.length - 1] : { x: this.x, y: this.y };
+
         this.x += this.vx;
         this.y += this.vy;
         this.vx *= friction;
@@ -474,8 +496,22 @@
         this.life--;
         this.alpha = this.life / 80;
 
-        this.trail.push({ x: this.x, y: this.y });
-        if (this.trail.length > this.maxTrail) {
+        const dx = this.x - lastPoint.x;
+        const dy = this.y - lastPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const spacing = 2; // desired spacing in pixels
+        const numIntermediate = Math.max(1, Math.floor(distance / spacing));
+
+        // Add intermediate points for a denser trail
+        for (let i = 1; i <= numIntermediate; i++) {
+          const t = i / numIntermediate;
+          const interpolatedX = lastPoint.x + dx * t;
+          const interpolatedY = lastPoint.y + dy * t;
+          this.trail.push({ x: interpolatedX, y: interpolatedY });
+        }
+
+        // Trim the trail to the maximum length
+        while (this.trail.length > this.maxTrail) {
           this.trail.shift();
         }
       }
@@ -511,7 +547,7 @@
       const x = Math.random() * fwCanvas.width;
       const y = fwCanvas.height;
       const angle = (Math.random() * 10 - 5) * (Math.PI / 180);
-      const speed = Math.random() * 3 + 7;
+      const speed = Math.random() * 3 + 4;
       const vx = Math.sin(angle) * speed;
       const vy = -Math.cos(angle) * speed;
       rockets.push(new Rocket(x, y, vx, vy, randomColor()));
@@ -546,21 +582,19 @@
     let multiplierInterval, normalInterval;
 
     // Start the fireworks effect.
-    // For the first 3000ms, launch rockets every 50ms (4× the normal rate).
-    // Then switch to a normal launch rate (every 200ms).
-    // Stop the entire effect after 8000ms.
+    // For the first few seconds, launch rockets rapidly and then at a normal rate.
     function startFireworksEffect() {
       // Show the canvas
       fwCanvas.style.display = "block";
       // Start the animation loop
       animateFireworks();
-      // Start multiplier interval (rocket launches at 50ms)
-      multiplierInterval = setInterval(launchRocket, 25);
+      // Start rapid rocket launches
+      multiplierInterval = setInterval(launchRocket, 50);
       setTimeout(() => {
         clearInterval(multiplierInterval);
         normalInterval = setInterval(launchRocket, 100);
       }, 5000);
-      // Stop fireworks after 8000ms
+      // Optionally, you can stop the effect after a set duration by calling stopFireworksEffect()
       //setTimeout(stopFireworksEffect, 8000);
     }
 
@@ -568,7 +602,6 @@
       clearInterval(multiplierInterval);
       clearInterval(normalInterval);
       cancelAnimationFrame(fireworksAnimationId);
-      // Optionally clear arrays so that old rockets/particles don’t linger
       rockets = [];
       particles = [];
       fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
