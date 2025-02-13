@@ -11,8 +11,8 @@
       height: 100%;
       width: 100%;
       margin: 0;
-      padding: 0px;
-      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 0;
+      font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     }
 
     nav {
@@ -61,6 +61,10 @@
       font-size: 4em;
       font-weight: 700;
       color: #fb6f92;
+      /* Font rendering fixes for Apple devices */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "tnum";
     }
 
     .message {
@@ -70,6 +74,10 @@
       margin-top: 1em;
       padding: 10px;
       white-space: pre-line;
+      /* Font rendering fixes for Apple devices */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "tnum";
     }
 
     /* Modern Button Styles */
@@ -79,7 +87,7 @@
 
     .button {
       display: inline-block;
-      padding:10px 60px;
+      padding: 10px 60px;
       margin: 10px;
       font-size: 0.8em;
       font-weight: bold;
@@ -88,7 +96,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
@@ -97,12 +105,12 @@
     }
 
     .btn-yes {
-      background-color: #dd2d4a;
+      background-color: #f49cbb;
       color: #fff;
     }
 
     .btn-no {
-      background-color: #f49cbb;
+      background-color: #dd2d4a;
       color: #fff;
     }
 
@@ -115,6 +123,7 @@
       background-color: #282c34;
     }
 
+    /* Fireworks canvas overlay */
     #fireworksCanvas {
       position: fixed;
       top: 0;
@@ -547,13 +556,13 @@
       // Start the animation loop
       animateFireworks();
       // Start multiplier interval (rocket launches at 50ms)
-      multiplierInterval = setInterval(launchRocket, 25);
+      multiplierInterval = setInterval(launchRocket, 50);
       setTimeout(() => {
         clearInterval(multiplierInterval);
-        normalInterval = setInterval(launchRocket, 100);
+        normalInterval = setInterval(launchRocket, 200);
       }, 3000);
       // Stop fireworks after 8000ms
-      //setTimeout(stopFireworksEffect, 8000);
+      setTimeout(stopFireworksEffect, 8000);
     }
 
     function stopFireworksEffect() {
